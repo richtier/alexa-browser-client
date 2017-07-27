@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <title>Alexa Browser Client</title>
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+  </head>
+  <body>
+    <div id="expecting-command-label"></div>
+    <script type="text/javascript">
+
+      function sendAudio(event) {
+        var samples = event.inputBuffer.getChannelData(0);
+        socket.send(samples);
+      }
+
+      function playAudio(samples) {
+        var source = context.createBufferSource();
+        // `decodeAudioData` not work in IE. 
+        context.decodeAudioData(samples, function(audioDataBuffer) {
+          source.buffer = audioDataBuffer;
+          source.connect(context.destination);
+          source.start(0);
+        });
+      }
+
+      function handleGetUserMediaSuccess(stream) {
+        var audioInput = context.createMediaStreamSource(stream);
+        var recorder = context.createScriptProcessor(16384, 1, 1);
+        recorder.onaudioprocess = sendAudio;
+        audioInput.connect(recorder);
+        recorder.connect(context.destination);
+      }
+
+      function handleGetUserMediaFailure() {}
+
+      function handleWebsocketMessage(event) {
+        if (event.data instanceof ArrayBuffer) {
+          playAudio(event.data);
+        } else {
+          var message = JSON.parse(event.data);
+          if (message.type == 'EXPECTING_COMMAND') {
+            expectingCommandLabel.innerText = message.payload ? 'listening' : 'waiting';
+          }
+        }
+      }
+
+      function createWebsocket(){
+        socket = new WebSocket('ws://localhost:8000/');
+        socket.binaryType = 'arraybuffer';
+        socket.onmessage = handleWebsocketMessage;
+      }
+
+      function websocketReconnectionMangaer(){
+        socket.readyState == WebSocket.CLOSED && createWebsocket();
+      }
+
+      var context = new window.AudioContext();
+      var expectingCommandLabel = document.getElementById('expecting-command-label');
+      var socket;
+      createWebsocket();
+      setInterval(websocketReconnectionMangaer, 1000);
+      navigator.webkitGetUserMedia(
+        {audio:true}, handleGetUserMediaSuccess, handleGetUserMediaFailure
+      );
+
+    </script>
+  </body>
+</html>
