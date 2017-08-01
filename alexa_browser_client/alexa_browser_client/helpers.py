@@ -26,9 +26,9 @@ class LifeCycleFileLike:
 class AudioLifecycle(command_lifecycle.BaseAudioLifecycle):
     audio_converter = command_lifecycle.helpers.WebAudioToWavConverter
     alexa_client = AlexaVoiceServiceClient(
-        client_id=settings.CLIENT_ID,
-        secret=settings.CLIENT_SECRET,
-        refresh_token=settings.REFRESH_TOKEN,
+        client_id=settings.ALEXA_VOICE_SERVICE_CLIENT_ID,
+        secret=settings.ALEXA_VOICE_SERVICE_CLIENT_SECRET,
+        refresh_token=settings.ALEXA_VOICE_SERVICE_REFRESH_TOKEN,
     )
 
     def __init__(self, reply_channel):

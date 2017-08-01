@@ -17,11 +17,11 @@ class AmazonAlexaServiceLoginView(RedirectView):
         url = reverse('amazon-authresponse')
         # OrderedDict to facilitate testing
         params = OrderedDict([
-            ('client_id', settings.CLIENT_ID),
+            ('client_id', settings.ALEXA_VOICE_SERVICE_CLIENT_ID),
             ('scope', 'alexa:all'),
             ('scope_data', json.dumps({
                 'alexa:all': OrderedDict([
-                    ('productID', settings.DEVICE_TYPE_ID),
+                    ('productID', settings.ALEXA_VOICE_SERVICE_DEVICE_TYPE_ID),
                     ('productInstanceAttributes', {
                         'deviceSerialNumber': '001'
                     })
@@ -39,8 +39,8 @@ class AmazonAlexaServiceLoginCallback(View):
     def get(self, request, *args, **kwargs):
         url = reverse('amazon-authresponse')
         payload = {
-            'client_id': settings.CLIENT_ID,
-            'client_secret': settings.CLIENT_SECRET,
+            'client_id': settings.ALEXA_VOICE_SERVICE_CLIENT_ID,
+            'client_secret': settings.ALEXA_VOICE_SERVICE_CLIENT_SECRET,
             'code': quote(request.GET['code']),
             'grant_type': 'authorization_code',
             'redirect_uri': self.request.build_absolute_uri(url),
