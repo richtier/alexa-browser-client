@@ -13,7 +13,7 @@ def get_requirements():
 
 setup(
     name='alexa_browser_client',
-    version='0.2.0',
+    version='0.1.0',
     url='https://github.com/richtier/alexa-browser-client',
     license='MIT',
     author='Richard Tier',
@@ -24,7 +24,9 @@ setup(
     install_requires=get_requirements(),
     classifiers=[
         'Development Status :: 4 - Beta',
-        'Environment :: Console',
+        'Environment :: Web Environment',
+        'Framework :: Django',
+        'Framework :: Django :: 1.11',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',

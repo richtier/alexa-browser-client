@@ -16,6 +16,7 @@ def pytest_configure():
                 'ROUTING': 'tests.config.routing.channel_routing',
             },
         },
+        INSTALLED_APPS=['alexa_browser_client']
     )
 
 

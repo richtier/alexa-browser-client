@@ -1,7 +1,7 @@
 from collections import OrderedDict
 import json
 
-from avs_client.client import AlexaVoiceServiceClient
+from avs_client.avs_client.client import AlexaVoiceServiceClient
 import command_lifecycle
 from django.conf import settings
 

@@ -16,7 +16,9 @@ class ChannelTestCase(ChannelTestCaseMixin):
 @pytest.fixture(autouse=True)
 def mock_alexa_client_connect():
     """Prevent handshake with alexa"""
-    stub = patch('avs_client.client.AlexaVoiceServiceClient.connect')
+    stub = patch(
+        'avs_client.avs_client.client.AlexaVoiceServiceClient.connect'
+    )
     stub.start()
     yield stub
     stub.stop()
