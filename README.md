@@ -18,26 +18,36 @@ Add `url(r'^', include('alexa_browser_client.alexa_browser_client.urls')),` to `
 
 Add `include('alexa_browser_client.alexa_browser_client.routing.channel_routing')` to your `routing.py` `channel_routing`.
 
-### settings.py
+## Authentication ##
 
-Valid authentication details are required to communicate with AVS. Set the following in your `settings.py`:
+You must first have a [developer account](http://developer.amazon.com). Then register your product [here](https://developer.amazon.com/avs/home.html#/avs/products/new). Choose "Application" under "Is your product an app or a device"?
 
-| setting | Notes                                                                |
-| --------------- | ---------------------------------------------------------------------- |
-| ALEXA_VOICE_SERVICE_CLIENT_ID     | See [AVS documentation](https://developer.amazon.com/public/solutions/alexa/alexa-voice-service/docs/authorizing-your-alexa-enabled-product-from-a-website#lwa)                                |
-| ALEXA_VOICE_SERVICE_CLIENT_SECRET        | See [AVS documentation](https://developer.amazon.com/public/solutions/alexa/alexa-voice-service/docs/authorizing-your-alexa-enabled-product-from-a-website#lwa)                                |
-| ALEXA_VOICE_SERVICE_REFRESH_TOKEN | See [below](#refresh-token) |
+Ensure you update your settings.py:
 
-### Refresh token
-When the client authenticates with AVS using the authentication values specified in  `ALEXA_VOICE_SERVICE_CLIENT_ID` and `ALEXA_VOICE_SERVICE_CLIENT_SECRET` AVS returns an access token that authorizes subsequent requests. The access token expires after an hour. To have AVS automatically generate a new access token once the old one expires, set your `ALEXA_VOICE_SERVICE_REFRESH_TOKEN` setting.
+| Setting                             | Notes                                 |
+| ----------------------------------- | ------------------------------------- |
+| `ALEXA_VOICE_SERVICE_CLIENT_ID`     | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
+| `ALEXA_VOICE_SERVICE_CLIENT_SECRET` | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
+| `ALEXA_VOICE_SERVICE_REFRESH_TOKEN` | You must generate this. [See here](#refresh-token)                                                               |
 
-To get your refresh token for the first time you will need to authenticate with Amazon via their web interface. To do this run:
+### Refresh token ###
+
+You will need to login to Amazon via a web browser to get your refresh token.
+
+To enable this first go [here](https://developer.amazon.com/avs/home.html#/avs/home) and click on your product to set some security settings under `Security Profile`:
+
+| setting             | value                            |
+| ------------------- | ---------------------------------|
+| Allowed Origins     | https://localhost:9000           |
+| Allowed Return URLs | https://localhost:9000/callback/ |
+
+Then run:
 
 ```sh
 ./manage.py create_amazon_refresh_token
 ```
 
-Then go to `http://localhost:8000` and follow the on-screen instructions. Use the `refresh_token` returned by Amazon in your `ALEXA_VOICE_SERVICE_REFRESH_TOKEN` setting.
+Follow the on-screen instructions shown at `http://localhost:9000` in your web browser. On completion Amazon will return your `refresh_token`. Set your`ALEXA_VOICE_SERVICE_REFRESH_TOKEN` setting accordingly.
 
 ## Usage
 
