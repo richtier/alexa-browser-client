@@ -13,6 +13,22 @@ pip install git+https://github.com/richtier/alexa-browser-client.git@v0.2.0#egg=
 
 Add `alexa_browser_client` to your settings `INSTALLED_APPS`.
 
+### Wakeword detector ###
+A wakeword is a specific word that triggers the code to spring into action (such as "Alexa"). This app uses [snowboy](https://github.com/Kitt-AI/snowboy#compile-a-python-wrapper) to determine if the wakeword was uttered. Snowboy will need to be installed first.
+
+Once you have compiled snowboy, copy the compiled `snowboy` folder to the top level of you project. By default, the folder structure should be:
+```
+.
+├── ...
+├── snowboy
+|   ├── snowboy-detect-swig.cc
+|   ├── snowboydetect.py
+|   └── resources
+|       ├── alexa.umdl
+|       └── common.res
+└── ...
+```
+
 ### Routing and urls
 Add `url(r'^', include('alexa_browser_client.alexa_browser_client.urls')),` to `urls.py` `url_patterns`.
 
