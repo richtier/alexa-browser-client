@@ -11,10 +11,10 @@ def reply_channel():
 
 @pytest.fixture
 def lifecycle(reply_channel):
-    stub = patch.object(helpers.AudioLifecycle, 'alexa_client')
-    stub.start()
-    yield helpers.AudioLifecycle(reply_channel=reply_channel)
-    stub.stop()
+    class TestAudioLifecycle(helpers.AudioLifecycle):
+        alexa_client_class = Mock()
+        audio_detector_class = Mock()
+    return TestAudioLifecycle(reply_channel=reply_channel)
 
 
 def test_audio_lifecycle_connects_to_avs(lifecycle):
@@ -23,7 +23,7 @@ def test_audio_lifecycle_connects_to_avs(lifecycle):
 
 def test_audio_lifecycle_sets_attributes(reply_channel):
     lifecycle = helpers.AudioLifecycle(reply_channel=reply_channel)
-    authenticator = lifecycle.alexa_client.authenticator
+    authenticator = lifecycle.alexa_client.authentication_manager
 
     assert lifecycle.reply_channel == reply_channel
     assert authenticator.client_id == 'my-client-id'
@@ -31,13 +31,10 @@ def test_audio_lifecycle_sets_attributes(reply_channel):
     assert authenticator.refresh_token == 'my-refresh-token'
 
 
-@pytest.mark.parametrize('should_ping,call_count', [[True, 1], [False, 0]])
-def test_audio_lifecycle_extend_audio_ping(should_ping, call_count, lifecycle):
-    lifecycle.alexa_client.should_ping.return_value = should_ping
-
+def test_audio_lifecycle_extend_audio_ping(lifecycle):
     lifecycle.extend_audio(b'\x05\x00')
 
-    assert lifecycle.alexa_client.ping.call_count == call_count
+    assert lifecycle.alexa_client.conditional_ping.call_count == 1
 
 
 def test_audio_lifecycle_handle_command_started_websocket_message(lifecycle):
@@ -68,7 +65,7 @@ def test_audio_lifecycle_handle_command_finished_websocket_message(lifecycle):
 
 
 def test_audio_lifecycle_sends_command_to_avs_sends_audio_file(lifecycle):
-    with patch.object(helpers, 'LifeCycleFileLike') as mock_filelike:
+    with patch('command_lifecycle.helpers.LifeCycleFileLike') as mock_filelike:
         lifecycle.send_command_to_avs()
 
     assert mock_filelike.call_args == call(lifecycle)
@@ -87,28 +84,10 @@ def test_audio_lifecycle_sends_command_to_avs_websocket_message(lifecycle):
     assert lifecycle.reply_channel.send.call_args == call({'bytes': b'thing'})
 
 
-def test_lifecycle_filelike_reads_from_buffer(lifecycle):
-    lifecycle.extend_audio(b'12345678')
-
-    file_like = helpers.LifeCycleFileLike(lifecycle)
-
-    assert file_like.read(4) == b'1234'
-    assert file_like.read(4) == b'5678'
-
-
-def test_lifecycle_filelike_length_not_expecting_audio(lifecycle):
-    lifecycle.extend_audio(b'12345678')
-    lifecycle.is_command_pending = False
-
-    file_like = helpers.LifeCycleFileLike(lifecycle)
-
-    assert len(file_like) == 8
-
-
-def test_lifecycle_filelike_length_expecting_audio(lifecycle):
-    lifecycle.extend_audio(b'12345678')
-    lifecycle.is_command_pending = True
-
-    file_like = helpers.LifeCycleFileLike(lifecycle)
-
-    assert len(file_like) == 1025
+def test_audio_lifecycle_alexa_voice_service_client(settings, lifecycle):
+    assert lifecycle.alexa_client_class.call_count == 1
+    assert lifecycle.alexa_client_class.call_args == call(
+        client_id='my-client-id',
+        secret='my-client-secret',
+        refresh_token='my-refresh-token',
+    )

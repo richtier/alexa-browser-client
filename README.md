@@ -8,7 +8,7 @@ Talk to Alexa from your desktop, phone, or tablet browser.
 This project also depends on [django-channels](https://channels.readthedocs.io/en/stable/). Install and set that up that first.
 
 ```
-pip install git+https://github.com/richtier/alexa-browser-client.git@v0.1.0#egg=alexa_browser_client
+pip install git+https://github.com/richtier/alexa-browser-client.git@v0.2.0#egg=alexa_browser_client
 ```
 
 Add `alexa_browser_client` to your settings `INSTALLED_APPS`.
