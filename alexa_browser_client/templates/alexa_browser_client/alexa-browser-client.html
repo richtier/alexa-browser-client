@@ -44,7 +44,7 @@
       }
 
       function createWebsocket(){
-        socket = new WebSocket('ws://localhost:8000/{% url "alexa-browser-client" %') ;
+        socket = new WebSocket('{{ websocket_url }}') ;
         socket.binaryType = 'arraybuffer';
         socket.onmessage = handleWebsocketMessage;
       }
