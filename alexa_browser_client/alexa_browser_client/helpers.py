@@ -3,6 +3,7 @@ import json
 
 from avs_client import AlexaVoiceServiceClient
 import command_lifecycle
+
 from django.conf import settings
 
 
@@ -13,9 +14,9 @@ class AudioLifecycle(command_lifecycle.BaseAudioLifecycle):
     def __init__(self, reply_channel):
         self.reply_channel = reply_channel
         self.alexa_client = self.alexa_client_class(
-            client_id=settings.ALEXA_VOICE_SERVICE_CLIENT_ID,
-            secret=settings.ALEXA_VOICE_SERVICE_CLIENT_SECRET,
-            refresh_token=settings.ALEXA_VOICE_SERVICE_REFRESH_TOKEN,
+            client_id=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID,
+            secret=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET,
+            refresh_token=settings.ALEXA_BROWSER_CLIENT_AVS_REFRESH_TOKEN,
         )
         self.alexa_client.connect()
         super().__init__()

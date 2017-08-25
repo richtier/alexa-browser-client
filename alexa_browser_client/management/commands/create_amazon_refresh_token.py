@@ -17,9 +17,9 @@ class Command(BaseCommand):
         server = http_server.AmazonLoginHttpServer(
             server_address=server_address,
             RequestHandlerClass=handlers.AmazonAlexaServiceLoginHandler,
-            client_id=settings.ALEXA_VOICE_SERVICE_CLIENT_ID,
-            client_secret=settings.ALEXA_VOICE_SERVICE_CLIENT_SECRET,
-            device_type_id=settings.ALEXA_VOICE_SERVICE_DEVICE_TYPE_ID,
+            client_id=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID,
+            client_secret=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET,
+            device_type_id=settings.ALEXA_BROWSER_CLIENT_AVS_DEVICE_TYPE_ID,
         )
         self.stdout.write(
             self.style.SUCCESS(

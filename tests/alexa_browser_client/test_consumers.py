@@ -1,4 +1,4 @@
-from unittest.mock import call, patch
+from unittest.mock import call, patch, Mock
 
 import pytest
 
@@ -15,13 +15,23 @@ def clear_connections():
     consumers.audio_lifecycles = {}
 
 
-def test_ws_add_creates_audio_lifecycle(ws_client):
+def test_ws_add_creates_default_audio_lifecycle(ws_client):
     assert len(consumers.audio_lifecycles) == 0
 
     ws_client.send_and_consume('websocket.connect', check_accept=False)
 
     assert len(consumers.audio_lifecycles) == 1
     assert isinstance(get_lifecycle(), helpers.AudioLifecycle)
+
+
+def test_ws_add_creates_custom_audio_lifecycle(ws_client, settings):
+    settings.ALEXA_BROWSER_CLIENT_LIFECYCLE_CLASS = 'unittest.mock.Mock'
+    assert len(consumers.audio_lifecycles) == 0
+
+    ws_client.send_and_consume('websocket.connect', check_accept=False)
+
+    assert len(consumers.audio_lifecycles) == 1
+    assert isinstance(get_lifecycle(), Mock)
 
 
 def test_ws_add_creates_accecpts_connection(ws_client):

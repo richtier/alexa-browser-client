@@ -29,10 +29,12 @@ Once you have compiled snowboy, copy the compiled `snowboy` folder to the top le
 └── ...
 ```
 
-### Routing and urls
-Add `url(r'^', include('alexa_browser_client.alexa_browser_client.urls')),` to `urls.py` `url_patterns`.
+If the default structure does not suit your needs can [customize the wakeword detector](#wakeword).
 
-Add `include('alexa_browser_client.alexa_browser_client.routing.channel_routing')` to your `routing.py` `channel_routing`.
+### Routing and urls
+Add `url(r'^', include('alexa_browser_client.config.urls')),` to `urls.py` `url_patterns`.
+
+Add `include('alexa_browser_client.config.routing.channel_routing')` to your `routing.py` `channel_routing`.
 
 ## Authentication ##
 
@@ -42,9 +44,9 @@ Ensure you update your settings.py:
 
 | Setting                             | Notes                                 |
 | ----------------------------------- | ------------------------------------- |
-| `ALEXA_VOICE_SERVICE_CLIENT_ID`     | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
-| `ALEXA_VOICE_SERVICE_CLIENT_SECRET` | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
-| `ALEXA_VOICE_SERVICE_REFRESH_TOKEN` | You must generate this. [See here](#refresh-token)                                                               |
+| `ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID`     | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
+| `ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET` | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
+| `ALEXA_BROWSER_CLIENT_AVS_REFRESH_TOKEN` | You must generate this. [See here](#refresh-token)                                                               |
 
 ### Refresh token ###
 
@@ -71,6 +73,36 @@ Once you have all the settings configured:
 
 - Run django: `./manage.py runserver localhost:8080`
 - Go to `http://localhost:8080/alexa-browser-client/` and start talking to Alexa.
+
+## Customization ##
+
+### Wakeword ###
+
+The default wakeword is "Alexa". You can change this by customizing the lifecycle's `audio_detector_class`:
+
+```py
+# my_project/custom.py
+
+import alexa_browser_client
+import command_lifecycle
+
+
+class CustomAudioDetector(command_lifecycle.wakeword.SnowboyWakewordDetector):
+    wakeword_library_import_path = 'dotted.import.path.to.wakeword.Detector'
+    resource_file = b'path/to/resource_file.res'
+    decoder_model = b'path/to/model_file.umdl'
+
+
+class CustomAudioLifecycle(alexa_browser_client.AudioLifecycle):
+    audio_detector_class = CustomAudioDetector
+```
+
+Then in your `settings.py`, change
+`settings.AUDIO_LIFECYCLE_CLASS` to the new custom audio lifecycle:
+
+```py
+ALEXA_BROWSER_CLIENT_LIFECYCLE_CLASS = 'my_project.custom.CustomAudioLifecycle'
+```
 
 ## Other projects
 
