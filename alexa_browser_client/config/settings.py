@@ -3,8 +3,8 @@ from django.conf import settings
 
 default_settings = {
     'ALEXA_BROWSER_CLIENT_LIFECYCLE_CLASS': (
-        'alexa_browser_client.AudioLifecycle',
-    )
+        'alexa_browser_client.AudioLifecycle'
+    ),
 }
 
 
