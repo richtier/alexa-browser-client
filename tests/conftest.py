@@ -52,3 +52,15 @@ def requests_mocker():
     m.start()
     yield m
     m.stop()
+
+
+@pytest.fixture(autouse=True)
+def mock_client_connect():
+    path = (
+        'alexa_browser_client.alexa_browser_client.helpers.alexa_client.'
+        'connect'
+    )
+    stub = patch(path)
+    stub.start()
+    yield stub
+    stub.stop()
