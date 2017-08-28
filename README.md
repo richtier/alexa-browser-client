@@ -53,6 +53,7 @@ Ensure you update your settings.py:
 | `ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID`     | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
 | `ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET` | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
 | `ALEXA_BROWSER_CLIENT_AVS_REFRESH_TOKEN` | You must generate this. [See here](#refresh-token)                                                               |
+| `ALEXA_BROWSER_CLIENT_AVS_DEVICE_TYPE_ID` | Retrieve by reading "Product ID" [here](https://developer.amazon.com/avs/home.html#/avs/home) |
 
 ### Refresh token ###
 
@@ -77,8 +78,8 @@ Follow the on-screen instructions shown at `http://localhost:9000` in your web b
 
 Once you have all the settings configured:
 
-- Run django: `./manage.py runserver localhost:9000`
-- Go to `http://localhost:9000/alexa-browser-client/` and start talking to Alexa.
+- Run django: `./manage.py runserver`
+- Go to `http://localhost:8000/alexa-browser-client/` and start talking to Alexa.
 
 ## Customization ##
 
