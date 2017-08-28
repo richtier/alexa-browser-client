@@ -1,3 +1,0 @@
-include README.md
-include LICENSE
-recursive-include alexa_browser_client

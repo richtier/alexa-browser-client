@@ -32,7 +32,7 @@ If the default folder structure does not suit your needs you can [customize the 
 ## Installation
 
 ```
-pip install git+https://github.com/richtier/alexa-browser-client.git@v0.2.0#egg=alexa_browser_client
+pip install alexa_browser_client
 ```
 
 Add `alexa_browser_client` to your settings `INSTALLED_APPS`.

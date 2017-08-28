@@ -18,8 +18,8 @@ setup(
     license='MIT',
     author='Richard Tier',
     description='Alexa client in your browser. Django app.',
-    packages=find_packages(),
-    long_description=open('README.md').read(),
+    packages=find_packages(exclude=["tests.*", "tests"]),
+    long_description=open('README.rst').read(),
     include_package_data=True,
     install_requires=get_requirements(),
     classifiers=[
