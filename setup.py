@@ -13,7 +13,7 @@ def get_requirements():
 
 setup(
     name='alexa_browser_client',
-    version='0.3.0',
+    version='0.3.1',
     url='https://github.com/richtier/alexa-browser-client',
     license='MIT',
     author='Richard Tier',

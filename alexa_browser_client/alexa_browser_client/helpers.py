@@ -15,7 +15,7 @@ alexa_client = AlexaVoiceServiceClient(
 
 
 class AudioLifecycle(command_lifecycle.BaseAudioLifecycle):
-    audio_converter = command_lifecycle.helpers.WebAudioToWavConverter
+    audio_converter_class = command_lifecycle.helpers.WebAudioToWavConverter
 
     def __init__(self, reply_channel):
         self.reply_channel = reply_channel

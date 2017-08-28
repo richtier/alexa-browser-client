@@ -24,7 +24,7 @@
 
       function handleGetUserMediaSuccess(stream) {
         var audioInput = context.createMediaStreamSource(stream);
-        var recorder = context.createScriptProcessor(16384, 1, 1);
+        var recorder = context.createScriptProcessor(4096, 1, 1);
         recorder.onaudioprocess = sendAudio;
         audioInput.connect(recorder);
         recorder.connect(context.destination);

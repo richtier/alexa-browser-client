@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import call, patch, Mock
 
 from alexa_browser_client.alexa_browser_client import helpers
+import command_lifecycle
 
 
 @pytest.fixture(autouse=True)
@@ -40,6 +41,11 @@ def lifecycle(reply_channel):
     return TestAudioLifecycle(reply_channel=reply_channel)
 
 
+def test_audio_lifecycle_audio_detector_class():
+    assert helpers.AudioLifecycle.audio_converter_class == (
+        command_lifecycle.helpers.WebAudioToWavConverter
+    )
+
 def test_audio_lifecycle_sets_attributes(reply_channel):
     lifecycle = helpers.AudioLifecycle(reply_channel=reply_channel)
     authenticator = helpers.alexa_client.authentication_manager
@@ -51,7 +57,7 @@ def test_audio_lifecycle_sets_attributes(reply_channel):
 
 
 def test_audio_lifecycle_extend_audio_ping(lifecycle):
-    lifecycle.extend_audio(b'\x05\x00')
+    lifecycle.extend_audio(b'\x05\x00\x05\x00')
 
     assert helpers.alexa_client.conditional_ping.call_count == 1
 
