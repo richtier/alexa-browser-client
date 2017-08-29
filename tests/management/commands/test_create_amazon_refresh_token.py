@@ -1,5 +1,5 @@
 from io import StringIO
-from unittest.mock import call, patch, Mock
+from unittest.mock import call, patch
 
 from avs_client.refreshtoken import handlers, http_server
 
@@ -13,7 +13,7 @@ def test_create_amazon_refresh_token_defaults(mock_http_server, settings):
     settings.ALEXA_VOICE_SERVICE_DEVICE_TYPE_ID = 'my-device-type-id'
 
     out = StringIO()
-    call_command('create_amazon_refresh_token', stdout=out) 
+    call_command('create_amazon_refresh_token', stdout=out)
 
     assert mock_http_server.call_count == 1
     assert mock_http_server.call_args == call(
@@ -39,7 +39,7 @@ def test_create_amazon_refresh_token_no_defaults(mock_http_server, settings):
         '--address=127.0.0.1',
         '--port=9000',
         stdout=out
-    ) 
+    )
 
     assert mock_http_server.call_count == 1
     assert mock_http_server.call_args == call(

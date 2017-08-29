@@ -1,5 +1,5 @@
 channels>=1.1.6
 Django>=1.11.1
 setuptools-git==1.2
-avs-client==0.5.0
-command-lifecycle==0.4.1
+avs-client==0.5.1
+command-lifecycle==0.5.0

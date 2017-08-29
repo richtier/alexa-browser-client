@@ -111,6 +111,15 @@ Then in your `settings.py`, change
 ALEXA_BROWSER_CLIENT_LIFECYCLE_CLASS = 'my_project.custom.CustomAudioLifecycle'
 ```
 
+## Unit test ##
+
+To run the unit tests, call the following commands:
+
+```sh
+pip install -r requirements-dev.txt
+./scripts/tests.sh
+```
+
 ## Other projects
 
 This project uses [Voice Command Lifecycle](https://github.com/richtier/voice-command-lifecycle) and [Alexa Voice Service Client](https://github.com/richtier/alexa-voice-service-client).

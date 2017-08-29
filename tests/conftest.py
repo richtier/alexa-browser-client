@@ -10,7 +10,9 @@ def pytest_configure():
         ALEXA_BROWSER_CLIENT_AVS_DEVICE_TYPE_ID='my-device-type-id',
         ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET='my-client-secret',
         ALEXA_BROWSER_CLIENT_AVS_REFRESH_TOKEN='my-refresh-token',
-        ALEXA_BROWSER_CLIENT_LIFECYCLE_CLASS='alexa_browser_client.AudioLifecycle',
+        ALEXA_BROWSER_CLIENT_LIFECYCLE_CLASS=(
+            'alexa_browser_client.AudioLifecycle'
+        ),
         ROOT_URLCONF='alexa_browser_client.config.urls',
         CHANNEL_LAYERS={
             'default': {
@@ -19,7 +21,7 @@ def pytest_configure():
             },
         },
         INSTALLED_APPS=['alexa_browser_client'],
-        TEMPLATES = [
+        TEMPLATES=[
             {
                 'BACKEND': 'django.template.backends.django.DjangoTemplates',
                 'DIRS': [],

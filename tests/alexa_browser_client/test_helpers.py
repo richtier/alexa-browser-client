@@ -46,6 +46,7 @@ def test_audio_lifecycle_audio_detector_class():
         command_lifecycle.helpers.WebAudioToWavConverter
     )
 
+
 def test_audio_lifecycle_sets_attributes(reply_channel):
     lifecycle = helpers.AudioLifecycle(reply_channel=reply_channel)
     authenticator = helpers.alexa_client.authentication_manager
