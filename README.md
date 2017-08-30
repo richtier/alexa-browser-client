@@ -1,7 +1,10 @@
-# alexa-browser-client
-Alexa client in your browser. Django app.
+# Alexa Browser Client
 
-Talk to Alexa from your desktop, phone, or tablet browser.
+[![code-climate-image]][code-climate]
+
+**Alexa client in your browser. Django app. Talk to Alexa from your desktop, phone, or tablet browser.**
+
+---
 
 ## Dependencies ##
 
@@ -123,3 +126,6 @@ pip install -r requirements-dev.txt
 ## Other projects
 
 This project uses [Voice Command Lifecycle](https://github.com/richtier/voice-command-lifecycle) and [Alexa Voice Service Client](https://github.com/richtier/alexa-voice-service-client).
+
+[code-climate-image]: https://codeclimate.com/github/richtier/alexa-browser-client/badges/gpa.svg
+[code-climate]: https://codeclimate.com/github/richtier/alexa-browser-client
