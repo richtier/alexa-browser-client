@@ -3,6 +3,7 @@
 [![code-climate-image]][code-climate]
 [![circle-ci-image]][circle-ci]
 [![codecov-image]][codecov]
+[![gemnasium-image]][gemnasium]
 
 **Alexa client in your browser. Django app. Talk to Alexa from your desktop, phone, or tablet browser.**
 
@@ -137,3 +138,7 @@ This project uses [Voice Command Lifecycle](https://github.com/richtier/voice-co
 
 [codecov-image]: https://codecov.io/gh/richtier/alexa-browser-client/branch/master/graph/badge.svg
 [codecov]: https://codecov.io/gh/richtier/alexa-browser-client
+
+[gemnasium-image]: https://gemnasium.com/badges/github.com/richtier/alexa-browser-client.svg
+[gemnasium]: https://gemnasium.com/github.com/richtier/alexa-browser-client
+
