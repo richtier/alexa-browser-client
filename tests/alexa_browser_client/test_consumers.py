@@ -60,6 +60,8 @@ def test_ws_add_creates_custom_audio_lifecycle(ws_client, settings):
 def test_ws_add_creates_accecpts_connection(ws_client):
     ws_client.send_and_consume('websocket.connect', check_accept=False)
 
+    assert ws_client.receive() == {'type': 'CONNECTING'}
+    assert ws_client.receive() == {'type': 'EXPECTING_WAKEWORD'}
     assert ws_client.receive() == {'accept': True}
 
 
