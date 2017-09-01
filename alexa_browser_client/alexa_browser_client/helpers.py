@@ -26,18 +26,12 @@ class AudioLifecycle(command_lifecycle.BaseAudioLifecycle):
         alexa_client.conditional_ping()
 
     def handle_command_started(self):
-        message = json.dumps(
-            OrderedDict([('type', 'EXPECTING_COMMAND'), ('payload', True)])
-        )
-        self.reply_channel.send({'text': message}, immediately=True)
+        self.push_alexa_status('EXPECTING_COMMAND')
         super().handle_command_started()
         self.send_command_to_avs()
 
     def handle_command_finised(self):
-        message = json.dumps(
-            OrderedDict([('type', 'EXPECTING_COMMAND'), ('payload', False)])
-        )
-        self.reply_channel.send({'text': message})
+        self.push_alexa_status('EXPECTING_WAKEWORD')
         super().handle_command_finised()
 
     def send_command_to_avs(self):
@@ -45,3 +39,7 @@ class AudioLifecycle(command_lifecycle.BaseAudioLifecycle):
         alexa_response_audio = alexa_client.send_audio_file(audio_file)
         if alexa_response_audio:
             self.reply_channel.send({'bytes': alexa_response_audio})
+
+    def push_alexa_status(self, message_id):
+        message = json.dumps(OrderedDict([('type', message_id)]))
+        self.reply_channel.send({'text': message}, immediately=True)

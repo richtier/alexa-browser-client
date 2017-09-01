@@ -4,7 +4,7 @@
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
   </head>
   <body>
-    <div id="expecting-command-label"></div>
+    <div id="status-label"></div>
     <script type="text/javascript">
 
       function sendAudio(event) {
@@ -38,7 +38,11 @@
         } else {
           var message = JSON.parse(event.data);
           if (message.type == 'EXPECTING_COMMAND') {
-            expectingCommandLabel.innerText = message.payload ? 'listening' : 'waiting';
+            statusLabel.innerText = 'Listening...';
+          } else if (message.type == 'EXPECTING_WAKEWORD') {
+            statusLabel.innerText = 'Waiting for wakeword. Say "Alexa"';
+          } else if (message.type == 'CONNECTING') {
+            statusLabel.innerText = 'Connecting to Alexa';
           }
         }
       }
@@ -54,7 +58,7 @@
       }
 
       var context = new window.AudioContext();
-      var expectingCommandLabel = document.getElementById('expecting-command-label');
+      var statusLabel = document.getElementById('status-label');
       var socket;
       createWebsocket();
       setInterval(websocketReconnectionMangaer, 1000);

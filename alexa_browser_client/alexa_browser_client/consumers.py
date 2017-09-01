@@ -19,13 +19,15 @@ def conditional_connect():
 def ws_add(message):
     reply_channel = message.reply_channel
     reply_channel.send({'accept': True})
-    conditional_connect()
     lifecycle_class_path = settings.get_setting(
         'ALEXA_BROWSER_CLIENT_LIFECYCLE_CLASS'
     )
     AudioLifecycle = import_string(lifecycle_class_path)
     audio_lifecycle = AudioLifecycle(reply_channel=reply_channel)
     state['audio_lifecycles'][reply_channel.name] = audio_lifecycle
+    audio_lifecycle.push_alexa_status('CONNECTING')
+    conditional_connect()
+    audio_lifecycle.push_alexa_status('EXPECTING_WAKEWORD')
 
 
 def ws_receive(message):

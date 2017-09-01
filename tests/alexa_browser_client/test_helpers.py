@@ -69,7 +69,7 @@ def test_audio_lifecycle_handle_command_started_websocket_message(lifecycle):
 
     assert lifecycle.reply_channel.send.call_count == 1
     assert lifecycle.reply_channel.send.call_args == call(
-        {'text': '{"type": "EXPECTING_COMMAND", "payload": true}'},
+        {'text': '{"type": "EXPECTING_COMMAND"}'},
         immediately=True
     )
 
@@ -86,7 +86,7 @@ def test_audio_lifecycle_handle_command_finished_websocket_message(lifecycle):
 
     assert lifecycle.reply_channel.send.call_count == 1
     assert lifecycle.reply_channel.send.call_args == call(
-        {'text': '{"type": "EXPECTING_COMMAND", "payload": false}'},
+        {'text': '{"type": "EXPECTING_WAKEWORD"}'}, immediately=True
     )
 
 
