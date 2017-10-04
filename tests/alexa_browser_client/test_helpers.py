@@ -97,7 +97,8 @@ def test_audio_lifecycle_sends_command_to_avs_sends_audio_file(lifecycle):
     assert mock_filelike.call_args == call(lifecycle)
     assert helpers.alexa_client.send_audio_file.call_count == 1
     assert helpers.alexa_client.send_audio_file.call_args == call(
-        mock_filelike()
+        audio_file=mock_filelike(),
+        context=None,
     )
 
 
