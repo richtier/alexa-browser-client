@@ -34,9 +34,11 @@ class AudioLifecycle(command_lifecycle.BaseAudioLifecycle):
         self.push_alexa_status('EXPECTING_WAKEWORD')
         super().handle_command_finised()
 
-    def send_command_to_avs(self):
+    def send_command_to_avs(self, context=None):
         audio_file = command_lifecycle.helpers.LifeCycleFileLike(self)
-        alexa_response_audio = alexa_client.send_audio_file(audio_file)
+        alexa_response_audio = alexa_client.send_audio_file(
+            audio_file=audio_file, context=context
+        )
         if alexa_response_audio:
             self.reply_channel.send({'bytes': alexa_response_audio})
 
