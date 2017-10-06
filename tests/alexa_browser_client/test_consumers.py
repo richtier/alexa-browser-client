@@ -7,13 +7,8 @@ from alexa_browser_client.alexa_browser_client import consumers, helpers
 
 @pytest.fixture(autouse=True)
 def mock_client_connect():
-    path = (
-        'alexa_browser_client.alexa_browser_client.consumers.'
-        'alexa_client.connect'
-    )
-    stub = patch(path)
-    stub.start()
-    yield stub
+    stub = patch('avs_client.AlexaVoiceServiceClient.connect')
+    yield stub.start()
     stub.stop()
 
 
@@ -39,12 +34,12 @@ def test_ws_add_creates_default_audio_lifecycle(ws_client):
     assert isinstance(get_lifecycle(), helpers.AudioLifecycle)
 
 
-def test_ws_add_calls_conditional_connect(ws_client):
+def test_ws_add_calls_connect(ws_client, mock_client_connect):
     ws_client.send_and_consume('websocket.connect', check_accept=False)
     ws_client.send_and_consume('websocket.connect', check_accept=False)
     ws_client.send_and_consume('websocket.connect', check_accept=False)
 
-    assert consumers.alexa_client.connect.call_count == 1
+    assert get_lifecycle().alexa_client.connect.call_count == 3
 
 
 def test_ws_add_creates_custom_audio_lifecycle(ws_client, settings):
@@ -57,7 +52,7 @@ def test_ws_add_creates_custom_audio_lifecycle(ws_client, settings):
     assert isinstance(get_lifecycle(), Mock)
 
 
-def test_ws_add_creates_accecpts_connection(ws_client):
+def test_ws_add_creates_accepts_connection(ws_client):
     ws_client.send_and_consume('websocket.connect', check_accept=False)
 
     assert ws_client.receive() == {'type': 'CONNECTING'}

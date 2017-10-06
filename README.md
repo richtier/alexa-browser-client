@@ -117,42 +117,6 @@ Then in your `settings.py`, change
 ALEXA_BROWSER_CLIENT_LIFECYCLE_CLASS = 'my_project.custom.CustomAudioLifecycle'
 ```
 
-### Device context ###
-
-Passing extra context to AVS is useful if you're running a custom AVS skill and need some data passed from the client to the AVS adapter, e.g, a smart home skill that controls the lights in the current room must know from which room the audio command came from:
-
-```py
-import alexa_browser_client
-
-
-class NamedAudioLifecycle(alexa_browser_client.AudioLifecycle):
-    def __init__(self, room_name, *args, **kwargs):
-        self.room_name = room_name
-        super().__init__(*args, **kwargs)
-
-    def get_context(self):
-        return {
-            'header': {
-                'namespace': 'MyCustomSkill',
-                'name': 'RoomState'
-            },
-            'payload': {
-                'name': self.room_name,
-            }
-        }
-
-    def send_command_to_avs(self, *args, **kwargs):
-        return super().send_command_to_avs(context=self.get_context())
-
-```
-
-Then in your `settings.py`, change
-`settings.AUDIO_LIFECYCLE_CLASS` to the new custom audio lifecycle:
-
-```py
-ALEXA_BROWSER_CLIENT_LIFECYCLE_CLASS = 'my_project.custom.NamedAudioLifecycle'
-```
-
 ## Unit test ##
 
 To run the unit tests, call the following commands:
@@ -160,6 +124,12 @@ To run the unit tests, call the following commands:
 ```sh
 pip install -r requirements-dev.txt
 ./scripts/tests.sh
+```
+
+To test a specific file, call the following command:
+
+```sh
+./scripts/tests.sh /path/to/test-file.py
 ```
 
 ## Other projects
