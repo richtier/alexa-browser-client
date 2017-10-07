@@ -43,8 +43,7 @@ def mock_snowboy(request):
         'wakeword_library_import_path'
     )
     stub = patch(path, PropertyMock(return_value='unittest.mock.Mock'))
-    stub.start()
-    yield stub
+    yield stub.start()
     stub.stop()
 
 
@@ -58,11 +57,6 @@ def requests_mocker():
 
 @pytest.fixture(autouse=True)
 def mock_client_connect():
-    path = (
-        'alexa_browser_client.alexa_browser_client.helpers.alexa_client.'
-        'connect'
-    )
-    stub = patch(path)
-    stub.start()
-    yield stub
+    stub = patch('avs_client.AlexaVoiceServiceClient.connect')
+    yield stub.start()
     stub.stop()
