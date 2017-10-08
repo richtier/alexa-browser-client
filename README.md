@@ -94,7 +94,7 @@ Once you have all the settings configured:
 The default wakeword is "Alexa". You can change this by customizing the lifecycle's `audio_detector_class`:
 
 ```py
-# my_project/custom.py
+# my_project/consumers.py
 
 import alexa_browser_client
 import command_lifecycle
@@ -108,13 +108,22 @@ class CustomAudioDetector(command_lifecycle.wakeword.SnowboyWakewordDetector):
 
 class CustomAudioLifecycle(alexa_browser_client.AudioLifecycle):
     audio_detector_class = CustomAudioDetector
+
+
+class CustomAlexaConsumer(alexa_browser_client.AlexaConsumer):
+    audio_lifecycle_class = CustomAudioLifecycle
 ```
 
-Then in your `settings.py`, change
-`settings.AUDIO_LIFECYCLE_CLASS` to the new custom audio lifecycle:
+Then in your `routes.py`:
 
-```py
-ALEXA_BROWSER_CLIENT_LIFECYCLE_CLASS = 'my_project.custom.CustomAudioLifecycle'
+```
+from my_project import consumers
+
+
+channel_routing = [
+    consumers.CustomAlexaConsumer.as_route(path='/'),
+]
+
 ```
 
 ## Unit test ##

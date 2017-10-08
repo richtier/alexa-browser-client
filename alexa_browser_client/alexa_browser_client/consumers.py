@@ -1,31 +1,36 @@
-from django.utils.module_loading import import_string
+from channels.generic.websockets import WebsocketConsumer
 
-from alexa_browser_client.config import settings
+from django.conf import settings
 
+from alexa_browser_client import AudioLifecycle
 
 state = {
     'audio_lifecycles': {},
 }
 
 
-def ws_add(message):
-    reply_channel = message.reply_channel
-    reply_channel.send({'accept': True})
-    lifecycle_class_path = settings.get_setting(
-        'ALEXA_BROWSER_CLIENT_LIFECYCLE_CLASS'
-    )
-    AudioLifecycle = import_string(lifecycle_class_path)
-    audio_lifecycle = AudioLifecycle(reply_channel=reply_channel)
-    state['audio_lifecycles'][reply_channel.name] = audio_lifecycle
-    audio_lifecycle.push_alexa_status('CONNECTING')
-    audio_lifecycle.alexa_client.connect()
-    audio_lifecycle.push_alexa_status('EXPECTING_WAKEWORD')
+class AlexaConsumer(WebsocketConsumer):
+    audio_lifecycle_class = AudioLifecycle
 
+    def connect(self, message, **kwargs):
+        super().connect(message=message, **kwargs)
+        audio_lifecycle = self.create_lifecycle()
+        name = self.message.reply_channel.name
+        state['audio_lifecycles'][name] = audio_lifecycle
+        audio_lifecycle.connect()
 
-def ws_receive(message):
-    audio_lifecycle = state['audio_lifecycles'][message.reply_channel.name]
-    audio_lifecycle.extend_audio(message.content['bytes'])
+    def receive(self, text=None, bytes=None, **kwargs):
+        name = self.message.reply_channel.name
+        audio_lifecycle = state['audio_lifecycles'][name]
+        audio_lifecycle.extend_audio(bytes)
 
+    def disconnect(self, message, **kwargs):
+        del state['audio_lifecycles'][self.message.reply_channel.name]
 
-def ws_disconnect(message):
-    del state['audio_lifecycles'][message.reply_channel.name]
+    def create_lifecycle(self):
+        return self.audio_lifecycle_class(
+            client_id=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID,
+            secret=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET,
+            refresh_token=settings.ALEXA_BROWSER_CLIENT_AVS_REFRESH_TOKEN,
+            reply_channel=self.message.reply_channel,
+        )

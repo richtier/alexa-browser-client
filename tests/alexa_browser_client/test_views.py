@@ -10,6 +10,4 @@ def test_alexa_browser_client_view(client):
     assert response.template_name == [
         views.AlexaBrowserClientView.template_name
     ]
-    assert response.context_data['websocket_url'] == (
-        'ws://testserver/alexa-browser-client/'
-    )
+    assert response.context_data['websocket_url'] == 'ws://testserver/'
