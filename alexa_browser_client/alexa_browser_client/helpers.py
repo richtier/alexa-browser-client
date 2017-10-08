@@ -4,21 +4,22 @@ import json
 from avs_client import AlexaVoiceServiceClient
 import command_lifecycle
 
-from django.conf import settings
-
 
 class AudioLifecycle(command_lifecycle.BaseAudioLifecycle):
     audio_converter_class = command_lifecycle.helpers.WebAudioToWavConverter
     alexa_client_class = AlexaVoiceServiceClient
 
-    def __init__(self, reply_channel):
+    def __init__(self, client_id, secret, refresh_token, reply_channel):
         self.reply_channel = reply_channel
         self.alexa_client = self.alexa_client_class(
-            client_id=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID,
-            secret=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET,
-            refresh_token=settings.ALEXA_BROWSER_CLIENT_AVS_REFRESH_TOKEN,
+            client_id=client_id, secret=secret, refresh_token=refresh_token,
         )
         super().__init__()
+
+    def connect(self):
+        self.push_alexa_status('CONNECTING')
+        self.alexa_client.connect()
+        self.push_alexa_status('EXPECTING_WAKEWORD')
 
     def extend_audio(self, *args, **kwargs):
         super().extend_audio(*args, **kwargs)

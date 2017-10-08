@@ -25,10 +25,15 @@ def reply_channel():
 
 
 @pytest.fixture
-def lifecycle(reply_channel):
+def lifecycle(reply_channel, settings):
     class TestAudioLifecycle(helpers.AudioLifecycle):
         audio_detector_class = Mock()
-    return TestAudioLifecycle(reply_channel=reply_channel)
+    return TestAudioLifecycle(
+        reply_channel=reply_channel,
+        client_id=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID,
+        secret=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET,
+        refresh_token=settings.ALEXA_BROWSER_CLIENT_AVS_REFRESH_TOKEN,
+    )
 
 
 def test_audio_lifecycle_audio_detector_class():
@@ -37,8 +42,7 @@ def test_audio_lifecycle_audio_detector_class():
     )
 
 
-def test_audio_lifecycle_sets_attributes(reply_channel):
-    lifecycle = helpers.AudioLifecycle(reply_channel=reply_channel)
+def test_audio_lifecycle_sets_attributes(lifecycle, reply_channel):
     authenticator = lifecycle.alexa_client.authentication_manager
 
     assert lifecycle.reply_channel == reply_channel

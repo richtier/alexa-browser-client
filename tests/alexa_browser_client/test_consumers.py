@@ -1,4 +1,4 @@
-from unittest.mock import call, patch, Mock
+from unittest.mock import call, patch
 
 import pytest
 
@@ -40,16 +40,6 @@ def test_ws_add_calls_connect(ws_client, mock_client_connect):
     ws_client.send_and_consume('websocket.connect', check_accept=False)
 
     assert get_lifecycle().alexa_client.connect.call_count == 3
-
-
-def test_ws_add_creates_custom_audio_lifecycle(ws_client, settings):
-    settings.ALEXA_BROWSER_CLIENT_LIFECYCLE_CLASS = 'unittest.mock.Mock'
-    assert len(consumers.state['audio_lifecycles']) == 0
-
-    ws_client.send_and_consume('websocket.connect', check_accept=False)
-
-    assert len(consumers.state['audio_lifecycles']) == 1
-    assert isinstance(get_lifecycle(), Mock)
 
 
 def test_ws_add_creates_accepts_connection(ws_client):
