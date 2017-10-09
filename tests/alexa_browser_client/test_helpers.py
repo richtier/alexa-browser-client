@@ -28,6 +28,7 @@ def reply_channel():
 def lifecycle(reply_channel, settings):
     class TestAudioLifecycle(helpers.AudioLifecycle):
         audio_detector_class = Mock()
+        filelike_wrapper_class = Mock()
     return TestAudioLifecycle(
         reply_channel=reply_channel,
         client_id=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID,
@@ -87,14 +88,12 @@ def test_audio_lifecycle_handle_command_finished_websocket_message(lifecycle):
 
 
 def test_audio_lifecycle_sends_command_to_avs_sends_audio_file(lifecycle):
-    with patch('command_lifecycle.helpers.LifeCycleFileLike') as mock_filelike:
-        lifecycle.send_command_to_avs()
+    lifecycle.send_command_to_avs()
 
-    assert mock_filelike.call_args == call(lifecycle)
+    assert lifecycle.filelike_wrapper_class.call_args == call(lifecycle)
     assert lifecycle.alexa_client.send_audio_file.call_count == 1
     assert lifecycle.alexa_client.send_audio_file.call_args == call(
-        audio_file=mock_filelike(),
-        context=None,
+        audio_file=lifecycle.filelike_wrapper_class(),
     )
 
 
