@@ -13,24 +13,21 @@ def mock_client_connect():
 
 
 def get_lifecycle():
-    assert len(consumers.state['audio_lifecycles']) == 1
-    return list(consumers.state['audio_lifecycles'].values())[0]
+    assert len(consumers.AlexaConsumer.lifecycles) == 1
+    return list(consumers.AlexaConsumer.lifecycles.values())[0]
 
 
 @pytest.fixture(autouse=True)
 def clear_state():
-    consumers.state = {
-        'audio_lifecycles': {},
-        'has_connected': False,
-    }
+    consumers.AlexaConsumer.lifecycles = {}
 
 
 def test_ws_add_creates_default_audio_lifecycle(ws_client):
-    assert len(consumers.state['audio_lifecycles']) == 0
+    assert len(consumers.AlexaConsumer.lifecycles) == 0
 
     ws_client.send_and_consume('websocket.connect', check_accept=False)
 
-    assert len(consumers.state['audio_lifecycles']) == 1
+    assert len(consumers.AlexaConsumer.lifecycles) == 1
     assert isinstance(get_lifecycle(), helpers.AudioLifecycle)
 
 
@@ -63,8 +60,8 @@ def test_ws_receive_extends_lifecycle_audio(ws_client):
 
 
 def test_ws_disconnects_deletes_lifecycle(ws_client):
-    assert len(consumers.state['audio_lifecycles']) == 0
+    assert len(consumers.AlexaConsumer.lifecycles) == 0
     ws_client.send_and_consume('websocket.connect', check_accept=False)
-    assert len(consumers.state['audio_lifecycles']) == 1
+    assert len(consumers.AlexaConsumer.lifecycles) == 1
     ws_client.send_and_consume('websocket.disconnect')
-    assert len(consumers.state['audio_lifecycles']) == 0
+    assert len(consumers.AlexaConsumer.lifecycles) == 0

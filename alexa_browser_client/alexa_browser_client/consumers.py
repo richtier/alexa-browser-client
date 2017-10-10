@@ -4,28 +4,25 @@ from django.conf import settings
 
 from alexa_browser_client import AudioLifecycle
 
-state = {
-    'audio_lifecycles': {},
-}
-
 
 class AlexaConsumer(WebsocketConsumer):
+    lifecycles = {}
     audio_lifecycle_class = AudioLifecycle
 
     def connect(self, message, **kwargs):
         super().connect(message=message, **kwargs)
         audio_lifecycle = self.create_lifecycle()
         name = self.message.reply_channel.name
-        state['audio_lifecycles'][name] = audio_lifecycle
+        self.lifecycles[name] = audio_lifecycle
         audio_lifecycle.connect()
 
     def receive(self, text=None, bytes=None, **kwargs):
         name = self.message.reply_channel.name
-        audio_lifecycle = state['audio_lifecycles'][name]
+        audio_lifecycle = self.lifecycles[name]
         audio_lifecycle.extend_audio(bytes)
 
     def disconnect(self, message, **kwargs):
-        del state['audio_lifecycles'][self.message.reply_channel.name]
+        del self.lifecycles[self.message.reply_channel.name]
 
     def create_lifecycle(self):
         return self.audio_lifecycle_class(
