@@ -1,4 +1,5 @@
 channels>=1.1.6
 Django>=1.11.1
-avs-client==0.6.0
+avs-client==0.7.0
 command-lifecycle==1.0.0
+requests>=2.19.1

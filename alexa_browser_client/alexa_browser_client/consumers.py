@@ -1,33 +1,47 @@
+import json
+
 from channels.generic.websockets import WebsocketConsumer
 
 from django.conf import settings
 
-from alexa_browser_client import AudioLifecycle
+from .helpers import AudioLifecycle
+
+from alexa_browser_client.refreshtoken.helpers import SESSION_KEY_REFRESH_TOKEN
+from .constants import AUTH_REQUIRED
 
 
 class AlexaConsumer(WebsocketConsumer):
     lifecycles = {}
     audio_lifecycle_class = AudioLifecycle
+    http_user_and_session = True
+
+    @property
+    def lifecycle_name(self):
+        return self.message.reply_channel.name
 
     def connect(self, message, **kwargs):
-        super().connect(message=message, **kwargs)
-        audio_lifecycle = self.create_lifecycle()
-        name = self.message.reply_channel.name
-        self.lifecycles[name] = audio_lifecycle
-        audio_lifecycle.connect()
+        if SESSION_KEY_REFRESH_TOKEN not in self.message.http_session:
+            self.message.reply_channel.send(
+                {'close': True, 'text': json.dumps({'type': AUTH_REQUIRED})},
+                immediately=True
+            )
+        else:
+            audio_lifecycle = self.create_lifecycle()
+            audio_lifecycle.connect()
+            self.lifecycles[self.lifecycle_name] = audio_lifecycle
+            super().connect(message=message, **kwargs)
 
     def receive(self, text=None, bytes=None, **kwargs):
-        name = self.message.reply_channel.name
-        audio_lifecycle = self.lifecycles[name]
+        audio_lifecycle = self.lifecycles[self.lifecycle_name]
         audio_lifecycle.extend_audio(bytes)
 
     def disconnect(self, message, **kwargs):
-        del self.lifecycles[self.message.reply_channel.name]
+        del self.lifecycles[self.lifecycle_name]
 
     def create_lifecycle(self):
         return self.audio_lifecycle_class(
             client_id=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID,
             secret=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET,
-            refresh_token=settings.ALEXA_BROWSER_CLIENT_AVS_REFRESH_TOKEN,
+            refresh_token=self.message.http_session[SESSION_KEY_REFRESH_TOKEN],
             reply_channel=self.message.reply_channel,
         )

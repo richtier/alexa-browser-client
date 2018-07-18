@@ -30,8 +30,6 @@
         recorder.connect(context.destination);
       }
 
-      function handleGetUserMediaFailure() {}
-
       function handleWebsocketMessage(event) {
         if (event.data instanceof ArrayBuffer) {
           playAudio(event.data);
@@ -43,8 +41,15 @@
             statusLabel.innerText = 'Waiting for wakeword. Say "Alexa"';
           } else if (message.type == 'CONNECTING') {
             statusLabel.innerText = 'Connecting to Alexa';
+          } else if (message.type == 'AUTH_REQUIRED') {
+            statusLabel.innerText = 'Login required. redirecting...'
+            setTimeout(handleLoginRequired, 1000);
           }
         }
+      }
+
+      function handleLoginRequired() {
+        window.location.href = '{% url "refreshtoken" %}'
       }
 
       function createWebsocket(){
@@ -62,9 +67,8 @@
       var socket;
       createWebsocket();
       setInterval(websocketReconnectionMangaer, 1000);
-      navigator.webkitGetUserMedia(
-        {audio:true}, handleGetUserMediaSuccess, handleGetUserMediaFailure
-      );
+      navigator.mediaDevices.getUserMedia({audio:true})
+        .then(handleGetUserMediaSuccess);
 
     </script>
   </body>
