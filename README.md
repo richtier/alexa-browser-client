@@ -88,14 +88,11 @@ To enable this first go [here](https://developer.amazon.com/avs/home.html#/avs/h
 | Allowed Return URLs | https://localhost:8000/refreshtoken/callback/ |
 
 
-Once that is done navigate to `https://localhost:8000/refreshtoken/` and follow the on-screen instructions shown at `http://localhost:9000` in your web browser. On completion Amazon will return your `refresh_token`.
-
 ## Usage
 
 Once you have all the settings configured:
 
 - Run django: `./manage.py runserver`
-- Go to `https://localhost:8000/refreshtoken/` to log in to Amazon. [See here](#refresh-token).
 - Go to `http://localhost:8000` and start talking to Alexa.
 
 ## Customization ##
