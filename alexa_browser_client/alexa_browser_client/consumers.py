@@ -20,16 +20,17 @@ class AlexaConsumer(WebsocketConsumer):
         return self.message.reply_channel.name
 
     def connect(self, message, **kwargs):
-        if SESSION_KEY_REFRESH_TOKEN not in self.message.http_session:
-            self.message.reply_channel.send(
-                {'close': True, 'text': json.dumps({'type': AUTH_REQUIRED})},
-                immediately=True
-            )
-        else:
+        session = self.message.http_session
+        if (session and SESSION_KEY_REFRESH_TOKEN in session):
             audio_lifecycle = self.create_lifecycle()
             audio_lifecycle.connect()
             self.lifecycles[self.lifecycle_name] = audio_lifecycle
             super().connect(message=message, **kwargs)
+        else:
+            self.message.reply_channel.send(
+                {'close': True, 'text': json.dumps({'type': AUTH_REQUIRED})},
+                immediately=True
+            )
 
     def receive(self, text=None, bytes=None, **kwargs):
         audio_lifecycle = self.lifecycles[self.lifecycle_name]
