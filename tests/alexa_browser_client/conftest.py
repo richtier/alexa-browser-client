@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from alexa_browser_client.refreshtoken.helpers import SESSION_KEY_REFRESH_TOKEN
 from channels.test.base import ChannelTestCaseMixin
 from channels.test import WSClient
 import pytest
@@ -36,3 +37,12 @@ def mock_channel_backend(autouse=True):
 @pytest.fixture
 def ws_client():
     return WSClient()
+
+
+@pytest.fixture
+def ws_client_refresh_token():
+    ws_client = WSClient()
+    ws_client.session.create()
+    ws_client.session[SESSION_KEY_REFRESH_TOKEN] = 'my-refresh-token'
+    ws_client.session.save()
+    return ws_client

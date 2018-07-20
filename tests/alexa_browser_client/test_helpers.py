@@ -33,7 +33,7 @@ def lifecycle(reply_channel, settings):
         reply_channel=reply_channel,
         client_id=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID,
         secret=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET,
-        refresh_token=settings.ALEXA_BROWSER_CLIENT_AVS_REFRESH_TOKEN,
+        refresh_token='my-refresh-token',
     )
 
 
@@ -47,8 +47,8 @@ def test_audio_lifecycle_sets_attributes(lifecycle, reply_channel):
     authenticator = lifecycle.alexa_client.authentication_manager
 
     assert lifecycle.reply_channel == reply_channel
-    assert authenticator.client_id == 'my-client-id'
-    assert authenticator.secret == 'my-client-secret'
+    assert authenticator.oauth2_manager.client_id == 'my-client-id'
+    assert authenticator.oauth2_manager.client_secret == 'my-client-secret'
     assert authenticator.refresh_token == 'my-refresh-token'
 
 

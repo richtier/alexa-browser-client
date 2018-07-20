@@ -3,7 +3,6 @@
 [![code-climate-image]][code-climate]
 [![circle-ci-image]][circle-ci]
 [![codecov-image]][codecov]
-[![gemnasium-image]][gemnasium]
 
 **Alexa client in your browser. Django app. Talk to Alexa from your desktop, phone, or tablet browser.**
 
@@ -41,7 +40,17 @@ If the default folder structure does not suit your needs you can [customize the 
 pip install alexa_browser_client
 ```
 
-Add `alexa_browser_client` to your settings `INSTALLED_APPS`.
+Make sure your settings `INSTALLED_APPS` contains at least these entries:
+
+```
+INSTALLED_APPS = [
+    'django.contrib.contenttypes',
+    'django.contrib.auth',
+    'django.contrib.sessions',
+    'channels',
+    'alexa_browser_client',
+]
+```
 
 ### Routing and urls
 Add `url(r'^', include('alexa_browser_client.config.urls')),` to `urls.py` `url_patterns`.
@@ -58,34 +67,29 @@ Ensure you update your settings.py:
 | ----------------------------------- | ------------------------------------- |
 | `ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID`     | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
 | `ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET` | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
-| `ALEXA_BROWSER_CLIENT_AVS_REFRESH_TOKEN` | You must generate this. [See here](#refresh-token)                                                               |
 | `ALEXA_BROWSER_CLIENT_AVS_DEVICE_TYPE_ID` | Retrieve by reading "Product ID" [here](https://developer.amazon.com/avs/home.html#/avs/home) |
 
 ### Refresh token ###
 
 You will need to login to Amazon via a web browser to get your refresh token.
 
-To enable this first go [here](https://developer.amazon.com/avs/home.html#/avs/home) and click on your product to set some security settings under `Security Profile`:
+To enable this first go [here](https://developer.amazon.com/avs/home.html#/avs/home) and click on your product to set some security settings under `Security Profile` and, assuming you're running on localhost:8000, set the following:
 
-| setting             | value                            |
-| ------------------- | ---------------------------------|
-| Allowed Origins     | https://localhost:9000           |
-| Allowed Return URLs | https://localhost:9000/callback/ |
+| setting             | value                                         |
+| ------------------- | ----------------------------------------------|
+| Allowed Origins     | https://localhost:8000/refreshtoken/          |
+| Allowed Return URLs | https://localhost:8000/refreshtoken/callback/ |
 
-Then run:
 
-```sh
-./manage.py create_amazon_refresh_token
-```
-
-Follow the on-screen instructions shown at `http://localhost:9000` in your web browser. On completion Amazon will return your `refresh_token`. Set your`ALEXA_BROWSER_CLIENT_AVS_REFRESH_TOKEN` setting accordingly.
+Once that is done navigate to `https://localhost:8000/refreshtoken/` and follow the on-screen instructions shown at `http://localhost:9000` in your web browser. On completion Amazon will return your `refresh_token`.
 
 ## Usage
 
 Once you have all the settings configured:
 
 - Run django: `./manage.py runserver`
-- Go to `http://localhost:8000/alexa-browser-client/` and start talking to Alexa.
+- Go to `https://localhost:8000/refreshtoken/` to log in to Amazon. [See here](#refresh-token).
+- Go to `http://localhost:8000` and start talking to Alexa.
 
 ## Customization ##
 
@@ -153,7 +157,3 @@ This project uses [Voice Command Lifecycle](https://github.com/richtier/voice-co
 
 [codecov-image]: https://codecov.io/gh/richtier/alexa-browser-client/branch/master/graph/badge.svg
 [codecov]: https://codecov.io/gh/richtier/alexa-browser-client
-
-[gemnasium-image]: https://gemnasium.com/badges/github.com/richtier/alexa-browser-client.svg
-[gemnasium]: https://gemnasium.com/github.com/richtier/alexa-browser-client
-

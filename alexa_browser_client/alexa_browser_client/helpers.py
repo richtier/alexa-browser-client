@@ -1,8 +1,9 @@
-from collections import OrderedDict
 import json
 
 from avs_client import AlexaVoiceServiceClient
 import command_lifecycle
+
+from . import constants
 
 
 class AudioLifecycle(command_lifecycle.BaseAudioLifecycle):
@@ -18,21 +19,21 @@ class AudioLifecycle(command_lifecycle.BaseAudioLifecycle):
         super().__init__()
 
     def connect(self):
-        self.push_alexa_status('CONNECTING')
+        self.push_alexa_status(constants.CONNECTING)
         self.alexa_client.connect()
-        self.push_alexa_status('EXPECTING_WAKEWORD')
+        self.push_alexa_status(constants.EXPECTING_WAKEWORD)
 
     def extend_audio(self, *args, **kwargs):
         super().extend_audio(*args, **kwargs)
         self.alexa_client.conditional_ping()
 
     def handle_command_started(self):
-        self.push_alexa_status('EXPECTING_COMMAND')
+        self.push_alexa_status(constants.EXPECTING_COMMAND)
         super().handle_command_started()
         self.send_command_to_avs()
 
     def handle_command_finised(self):
-        self.push_alexa_status('EXPECTING_WAKEWORD')
+        self.push_alexa_status(constants.EXPECTING_WAKEWORD)
         super().handle_command_finised()
 
     def send_command_to_avs(self):
@@ -43,5 +44,7 @@ class AudioLifecycle(command_lifecycle.BaseAudioLifecycle):
             self.reply_channel.send({'bytes': alexa_response_audio})
 
     def push_alexa_status(self, message_id):
-        message = json.dumps(OrderedDict([('type', message_id)]))
-        self.reply_channel.send({'text': message}, immediately=True)
+        self.reply_channel.send(
+            {'text': json.dumps({'type': message_id})},
+            immediately=True
+        )

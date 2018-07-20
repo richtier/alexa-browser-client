@@ -9,7 +9,6 @@ def pytest_configure():
         ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID='my-client-id',
         ALEXA_BROWSER_CLIENT_AVS_DEVICE_TYPE_ID='my-device-type-id',
         ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET='my-client-secret',
-        ALEXA_BROWSER_CLIENT_AVS_REFRESH_TOKEN='my-refresh-token',
         ROOT_URLCONF='alexa_browser_client.config.urls',
         CHANNEL_LAYERS={
             'default': {
@@ -17,7 +16,13 @@ def pytest_configure():
                 'ROUTING': 'tests.config.routing.channel_routing',
             },
         },
-        INSTALLED_APPS=['alexa_browser_client'],
+        INSTALLED_APPS=[
+            'django.contrib.contenttypes',
+            'django.contrib.auth',
+            'django.contrib.sessions',
+            'channels',
+            'alexa_browser_client',
+        ],
         TEMPLATES=[
             {
                 'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -29,6 +34,15 @@ def pytest_configure():
                     ],
                 },
             },
+        ],
+        CACHES={
+            'default': {
+                'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            }
+        },
+        SESSION_ENGINE='django.contrib.sessions.backends.cache',
+        MIDDLEWARE=[
+            'django.contrib.sessions.middleware.SessionMiddleware',
         ]
     )
 
