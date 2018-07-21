@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.views.generic.base import RedirectView
 from django.views.generic.edit import FormView
 
-from . import forms, helpers
+from . import constants, forms
 
 
 class Oauth2Mixin:
@@ -61,6 +61,7 @@ class AmazonOauth2AuthorizationGrantView(
         )
         if response.status_code != 200:
             return JsonResponse(response.json(), status=response.status_code)
-        refresh_token = response.json()['refresh_token']
-        self.request.session[helpers.SESSION_KEY_REFRESH_TOKEN] = refresh_token
+        self.request.session[constants.SESSION_KEY_REFRESH_TOKEN] = (
+            response.json()['refresh_token']
+        )
         return redirect('/')

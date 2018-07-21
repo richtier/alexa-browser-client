@@ -5,7 +5,9 @@ import pytest
 
 from django.urls import reverse
 
-from alexa_browser_client.refreshtoken.helpers import SESSION_KEY_REFRESH_TOKEN
+from alexa_browser_client.refreshtoken.constants import (
+    SESSION_KEY_REFRESH_TOKEN
+)
 
 
 @patch.object(AmazonOauth2RequestManager, 'get_authorization_request_url')

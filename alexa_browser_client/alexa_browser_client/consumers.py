@@ -6,7 +6,9 @@ from django.conf import settings
 
 from .helpers import AudioLifecycle
 
-from alexa_browser_client.refreshtoken.helpers import SESSION_KEY_REFRESH_TOKEN
+from alexa_browser_client.refreshtoken.constants import (
+    SESSION_KEY_REFRESH_TOKEN
+)
 from .constants import AUTH_REQUIRED
 
 

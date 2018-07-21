@@ -1,6 +1,8 @@
 from unittest.mock import patch
 
-from alexa_browser_client.refreshtoken.helpers import SESSION_KEY_REFRESH_TOKEN
+from alexa_browser_client.refreshtoken.constants import (
+    SESSION_KEY_REFRESH_TOKEN
+)
 from channels.test.base import ChannelTestCaseMixin
 from channels.test import WSClient
 import pytest
