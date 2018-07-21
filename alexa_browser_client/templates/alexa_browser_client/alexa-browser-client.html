@@ -8,13 +8,14 @@
     <script type="text/javascript">
 
       function sendAudio(event) {
-        var samples = event.inputBuffer.getChannelData(0);
-        socket.send(samples);
+        if (socket.readyState == WebSocket.OPEN) {
+          var samples = event.inputBuffer.getChannelData(0);
+          socket.send(samples);
+        }
       }
 
       function playAudio(samples) {
         var source = context.createBufferSource();
-        // `decodeAudioData` not work in IE. 
         context.decodeAudioData(samples, function(audioDataBuffer) {
           source.buffer = audioDataBuffer;
           source.connect(context.destination);
