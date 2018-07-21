@@ -39,7 +39,7 @@
           if (message.type == 'EXPECTING_COMMAND') {
             statusLabel.innerText = 'Listening...';
           } else if (message.type == 'EXPECTING_WAKEWORD') {
-            statusLabel.innerText = 'Waiting for wakeword. Say "Alexa"';
+            statusLabel.innerText = 'Say "Alexa"';
           } else if (message.type == 'CONNECTING') {
             statusLabel.innerText = 'Connecting to Alexa';
           } else if (message.type == 'AUTH_REQUIRED') {

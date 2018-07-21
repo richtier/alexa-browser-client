@@ -25,8 +25,8 @@ class AlexaConsumer(WebsocketConsumer):
         session = self.message.http_session
         if (session and SESSION_KEY_REFRESH_TOKEN in session):
             audio_lifecycle = self.create_lifecycle()
-            audio_lifecycle.connect()
             self.lifecycles[self.lifecycle_name] = audio_lifecycle
+            audio_lifecycle.connect()
             super().connect(message=message, **kwargs)
         else:
             self.message.reply_channel.send(
@@ -39,7 +39,8 @@ class AlexaConsumer(WebsocketConsumer):
         audio_lifecycle.extend_audio(bytes)
 
     def disconnect(self, message, **kwargs):
-        del self.lifecycles[self.lifecycle_name]
+        if self.lifecycle_name in self.lifecycles:
+            del self.lifecycles[self.lifecycle_name]
 
     def create_lifecycle(self):
         return self.audio_lifecycle_class(
