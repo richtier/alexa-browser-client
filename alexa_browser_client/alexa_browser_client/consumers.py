@@ -29,10 +29,13 @@ class AlexaConsumer(WebsocketConsumer):
             audio_lifecycle.connect()
             super().connect(message=message, **kwargs)
         else:
-            self.message.reply_channel.send(
-                {'close': True, 'text': json.dumps({'type': AUTH_REQUIRED})},
-                immediately=True
-            )
+            self.close_auth_required()
+
+    def close_auth_required(self):
+        self.message.reply_channel.send(
+            {'close': True, 'text': json.dumps({'type': AUTH_REQUIRED})},
+            immediately=True
+        )
 
     def receive(self, text=None, bytes=None, **kwargs):
         audio_lifecycle = self.lifecycles[self.lifecycle_name]
