@@ -149,6 +149,10 @@ To test a specific file, call the following command:
 ./scripts/tests.sh /path/to/test-file.py
 ```
 
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [PyPI](https://pypi.org/project/alexa-browser-client/#history).
+
 ## Other projects
 
 This project uses [Voice Command Lifecycle](https://github.com/richtier/voice-command-lifecycle) and [Alexa Voice Service Client](https://github.com/richtier/alexa-voice-service-client).
@@ -158,6 +162,3 @@ This project uses [Voice Command Lifecycle](https://github.com/richtier/voice-co
 
 [circle-ci-image]: https://circleci.com/gh/richtier/alexa-browser-client/tree/master.svg?style=svg
 [circle-ci]: https://circleci.com/gh/richtier/alexa-browser-client/tree/master
-
-[codecov-image]: https://codecov.io/gh/richtier/alexa-browser-client/branch/master/graph/badge.svg
-[codecov]: https://codecov.io/gh/richtier/alexa-browser-client
