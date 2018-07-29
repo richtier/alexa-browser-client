@@ -24,6 +24,15 @@ class Oauth2Mixin:
         url = reverse('refreshtoken-callback')
         return self.request.build_absolute_uri(url)
 
+    @property
+    def redirect_url(self):
+        url = self.request.session.get(constants.SESSION_KEY_REDIRECT_URL)
+        return url or '/'
+
+    @redirect_url.setter
+    def redirect_url(self, value):
+        self.request.session[constants.SESSION_KEY_REDIRECT_URL] = value
+
 
 class SubmitFormOnGetMixin:
     def get_form_kwargs(self):
@@ -36,6 +45,11 @@ class SubmitFormOnGetMixin:
 
 
 class AmazonAuthorizationRequestRedirectView(Oauth2Mixin, RedirectView):
+
+    def dispatch(self, *args, **kwargs):
+        self.redirect_url = self.request.GET.get('redirect_url')
+        return super().dispatch(*args, **kwargs)
+
     def get_redirect_url(self):
         return self.oauth2_manager.get_authorization_request_url(
             device_type_id=settings.ALEXA_BROWSER_CLIENT_AVS_DEVICE_TYPE_ID,
@@ -64,4 +78,4 @@ class AmazonOauth2AuthorizationGrantView(
         self.request.session[constants.SESSION_KEY_REFRESH_TOKEN] = (
             response.json()['refresh_token']
         )
-        return redirect('/')
+        return redirect(self.redirect_url)

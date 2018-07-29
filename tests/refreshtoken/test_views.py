@@ -6,7 +6,7 @@ import pytest
 from django.urls import reverse
 
 from alexa_browser_client.refreshtoken.constants import (
-    SESSION_KEY_REFRESH_TOKEN
+    SESSION_KEY_REDIRECT_URL, SESSION_KEY_REFRESH_TOKEN
 )
 
 
@@ -44,7 +44,7 @@ def test_authorization_grant_view(
     )
 
     assert response.status_code == 302
-
+    assert response.url == '/'
     assert mock_get_authorizarization_grant_params.call_count == 1
     assert mock_get_authorizarization_grant_params.call_args == call(
         code='my-code',
@@ -81,3 +81,37 @@ def test_authorization_grant_view_missing_code(client, requests_mocker, data):
 
     assert response.status_code == 400
     assert response.json() == {'code': ['This field is required.']}
+
+
+def test_refreshtoken_redirect_url(client):
+    redirect_url = 'http://redirect.com'
+    client.get(
+        reverse('refreshtoken'), {'redirect_url': redirect_url}
+    )
+
+    assert client.session[SESSION_KEY_REDIRECT_URL] == redirect_url
+
+
+@patch.object(AmazonOauth2RequestManager, 'get_authorizarization_grant_params')
+def test_authorization_grant_view_redirect_url(
+    mock_get_authorizarization_grant_params, client, requests_mocker
+):
+    redirect_url = 'http://redirect.com'
+    # saves the redurect url in session
+    client.get(
+        reverse('refreshtoken'), {'redirect_url': redirect_url}
+    )
+
+    requests_mocker.post(
+        AmazonOauth2RequestManager.authorization_grant_url,
+        json={'refresh_token': 'my-refresh-token'}
+    )
+    mock_get_authorizarization_grant_params.return_value = {'code': 'my-code'}
+
+    response = client.get(
+        reverse('refreshtoken-callback'),
+        {'code': 'my-code'}
+    )
+
+    assert response.status_code == 302
+    assert response.url == redirect_url
