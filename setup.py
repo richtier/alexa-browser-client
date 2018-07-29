@@ -1,32 +1,23 @@
-import pip.download
-from pip.req import parse_requirements
 from setuptools import setup, find_packages
-
-try:
-    long_description = open('README.rst').read()
-except FileNotFoundError:
-    long_description = open('README.md').read()
-
-
-def get_requirements():
-    requirements = parse_requirements(
-        'requirements.txt',
-        session=pip.download.PipSession()
-    )
-    return [str(r.req) for r in list(requirements)]
 
 
 setup(
     name='alexa_browser_client',
-    version='1.1.0',
+    version='1.2.0',
     url='https://github.com/richtier/alexa-browser-client',
     license='MIT',
     author='Richard Tier',
     description='Alexa client in your browser. Django app.',
     packages=find_packages(exclude=["tests.*", "tests"]),
-    long_description=long_description,
+    long_description=open('docs/README.rst').read(),
     include_package_data=True,
-    install_requires=get_requirements(),
+    install_requires=[
+        'channels<2.0.0',
+        'Django>=1.11.1<2.0.0',
+        'avs-client>=0.7.0<1.0.0',
+        'command-lifecycle>=2.0.0<3.0.0',
+        'requests>=2.19.1<3.0.0',
+    ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
