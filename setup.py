@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='alexa_browser_client',
-    version='1.2.0',
+    version='1.3.0',
     url='https://github.com/richtier/alexa-browser-client',
     license='MIT',
     author='Richard Tier',
