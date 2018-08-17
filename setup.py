@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='alexa_browser_client',
-    version='1.3.0',
+    version='2.0.0',
     url='https://github.com/richtier/alexa-browser-client',
     license='MIT',
     author='Richard Tier',
@@ -12,11 +12,11 @@ setup(
     long_description=open('docs/README.rst').read(),
     include_package_data=True,
     install_requires=[
-        'channels<2.0.0',
-        'Django>=1.11.1<2.0.0',
-        'avs-client>=0.7.0<1.0.0',
-        'command-lifecycle>=2.0.0<3.0.0',
-        'requests>=2.19.1<3.0.0',
+        'channels>=1.0.0,<2.0.0',
+        'Django>=1.11.1,<2.0.0',
+        'avs-client>=0.7.1,<1.0.0',
+        'command-lifecycle>=2.0.0,<3.0.0',
+        'requests>=2.19.1,<3.0.0',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

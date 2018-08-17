@@ -1,8 +1,10 @@
-import pytest
 from unittest.mock import call, patch, Mock
 
-from alexa_browser_client.alexa_browser_client import helpers
+from avs_client import AlexaVoiceServiceClient
 import command_lifecycle
+import pytest
+
+from alexa_browser_client.alexa_browser_client import helpers
 
 
 @pytest.fixture(autouse=True)
@@ -25,15 +27,23 @@ def reply_channel():
 
 
 @pytest.fixture
-def lifecycle(reply_channel, settings):
-    class TestAudioLifecycle(helpers.AudioLifecycle):
-        audio_detector_class = Mock()
-        filelike_wrapper_class = Mock()
-    return TestAudioLifecycle(
-        reply_channel=reply_channel,
+def alexa_client(settings):
+    return AlexaVoiceServiceClient(
         client_id=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID,
         secret=settings.ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET,
         refresh_token='my-refresh-token',
+    )
+
+
+@pytest.fixture
+def lifecycle(reply_channel, alexa_client):
+    class TestAudioLifecycle(helpers.AudioLifecycle):
+        audio_detector_class = Mock()
+        filelike_wrapper_class = Mock()
+
+    return TestAudioLifecycle(
+        reply_channel=reply_channel,
+        alexa_client=alexa_client,
     )
 
 
