@@ -70,6 +70,7 @@ class LifecycleMixin:
 
     def connect(self, message, **kwargs):
         audio_lifecycle = self.create_lifecycle()
+        self.lifecycles[self.lifecycle_name] = audio_lifecycle
         audio_lifecycle.handle_connecting()
         try:
             self.handle_alexa_connect()
@@ -77,7 +78,6 @@ class LifecycleMixin:
             self.close_auth_required()
         else:
             audio_lifecycle.handle_connected()
-            self.lifecycles[self.lifecycle_name] = audio_lifecycle
             super().connect(message=message, **kwargs)
 
     def close_auth_required(self):
