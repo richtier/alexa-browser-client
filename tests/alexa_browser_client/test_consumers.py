@@ -99,6 +99,6 @@ def test_ws_disconnects_deletes_lifecycle(ws_client_refresh_token):
 def test_ws_disconnects_handles_rejected_connection(ws_client):
     assert len(consumers.AlexaConsumer.lifecycles) == 0
     ws_client.send_and_consume('websocket.connect', check_accept=False)
-    assert len(consumers.AlexaConsumer.lifecycles) == 0
+    assert len(consumers.AlexaConsumer.lifecycles) == 1
     ws_client.send_and_consume('websocket.disconnect')
     assert len(consumers.AlexaConsumer.lifecycles) == 0
