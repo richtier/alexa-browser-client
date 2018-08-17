@@ -1,5 +1,6 @@
 from unittest.mock import call, patch
 
+from requests.exceptions import HTTPError
 import pytest
 
 from alexa_browser_client.alexa_browser_client import (
@@ -24,8 +25,19 @@ def get_lifecycle():
     return list(consumers.AlexaConsumer.lifecycles.values())[0]
 
 
-def test_websocket_connect_rejected_no_refresh_token(ws_client):
+@patch.object(consumers.AlexaConsumer.alexa_client_class, 'connect')
+def test_websocket_connect_rejected_no_refresh_token(mock_connect, ws_client):
+
+    mock_connect.side_effect = HTTPError()
     ws_client.send_and_consume('websocket.connect', check_accept=False)
+
+    assert ws_client.receive() == {'type': 'CONNECTING'}
+    assert ws_client.receive() == {'type': constants.AUTH_REQUIRED}
+
+
+def test_websocket_connect_rejected_invalid_refresh_token(ws_client):
+    ws_client.send_and_consume('websocket.connect', check_accept=False)
+    assert ws_client.receive() == {'type': 'CONNECTING'}
     assert ws_client.receive() == {'type': constants.AUTH_REQUIRED}
 
 
