@@ -3,13 +3,14 @@ from setuptools import setup, find_packages
 
 setup(
     name='alexa_browser_client',
-    version='2.0.1',
+    version='2.1.0',
     url='https://github.com/richtier/alexa-browser-client',
     license='MIT',
     author='Richard Tier',
     description='Alexa client in your browser. Django app.',
     packages=find_packages(exclude=["tests.*", "tests"]),
-    long_description=open('docs/README.rst').read(),
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     include_package_data=True,
     install_requires=[
         'channels>=1.0.0,<2.0.0',
