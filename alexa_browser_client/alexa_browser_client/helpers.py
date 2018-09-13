@@ -1,6 +1,5 @@
 import json
 
-from avs_client import AlexaVoiceServiceClient
 import command_lifecycle
 
 from . import constants
@@ -8,19 +7,17 @@ from . import constants
 
 class AudioLifecycle(command_lifecycle.BaseAudioLifecycle):
     audio_converter_class = command_lifecycle.helpers.WebAudioToWavConverter
-    alexa_client_class = AlexaVoiceServiceClient
     filelike_wrapper_class = command_lifecycle.helpers.LifeCycleFileLike
 
-    def __init__(self, client_id, secret, refresh_token, reply_channel):
+    def __init__(self, alexa_client, reply_channel):
         self.reply_channel = reply_channel
-        self.alexa_client = self.alexa_client_class(
-            client_id=client_id, secret=secret, refresh_token=refresh_token,
-        )
+        self.alexa_client = alexa_client
         super().__init__()
 
-    def connect(self):
+    def handle_connecting(self):
         self.push_alexa_status(constants.CONNECTING)
-        self.alexa_client.connect()
+
+    def handle_connected(self):
         self.push_alexa_status(constants.EXPECTING_WAKEWORD)
 
     def extend_audio(self, *args, **kwargs):

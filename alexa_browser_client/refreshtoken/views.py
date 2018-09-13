@@ -75,7 +75,9 @@ class AmazonOauth2AuthorizationGrantView(
         )
         if response.status_code != 200:
             return JsonResponse(response.json(), status=response.status_code)
-        self.request.session[constants.SESSION_KEY_REFRESH_TOKEN] = (
-            response.json()['refresh_token']
-        )
+        self.cache_refresh_token(response.json()['refresh_token'])
         return redirect(self.redirect_url)
+
+    def cache_refresh_token(self, refresh_token):
+        key = constants.SESSION_KEY_REFRESH_TOKEN
+        self.request.session[key] = refresh_token
