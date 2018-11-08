@@ -1,8 +1,9 @@
-from channels.routing import route_class
+from channels.routing import ProtocolTypeRouter
+from channels.sessions import SessionMiddlewareStack
 
 from alexa_browser_client.alexa_browser_client import consumers
 
 
-channel_routing = [
-    route_class(consumers.AlexaConsumer),
-]
+application = ProtocolTypeRouter({
+    'websocket': SessionMiddlewareStack(consumers.AlexaConsumer)
+})

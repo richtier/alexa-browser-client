@@ -6,6 +6,7 @@
   <body>
     <h1 id="status-label" style="font-size: 60px;"></h1>
     <script type="text/javascript">
+      var statusLabel = document.getElementById('status-label');
 
       function sendAudio(event) {
         if (socket.readyState == WebSocket.OPEN) {
@@ -42,11 +43,15 @@
             statusLabel.innerText = 'Say "Alexa"';
           } else if (message.type == 'CONNECTING') {
             statusLabel.innerText = 'Connecting to Alexa';
-          } else if (message.type == 'AUTH_REQUIRED') {
+          }
+        }
+      }
+
+      function handleWebsocketClose(event) {
+         if (event.code == 3000) {
             statusLabel.innerText = 'Login required. redirecting...'
             setTimeout(handleLoginRequired, 1000);
           }
-        }
       }
 
       function handleLoginRequired() {
@@ -57,6 +62,7 @@
         socket = new WebSocket('{{ websocket_url }}') ;
         socket.binaryType = 'arraybuffer';
         socket.onmessage = handleWebsocketMessage;
+        socket.onclose = handleWebsocketClose;
       }
 
       function websocketReconnectionMangaer(){

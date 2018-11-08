@@ -3,6 +3,8 @@
 [![code-climate-image]][code-climate]
 [![circle-ci-image]][circle-ci]
 [![codecov-image]][codecov]
+[![pypi-image]][pypi]
+[![django-version-image]][pypi]
 
 **Alexa client in your browser. Django app. Talk to Alexa from your desktop, phone, or tablet browser.**
 
@@ -160,5 +162,13 @@ This project uses [Voice Command Lifecycle](https://github.com/richtier/voice-co
 [code-climate-image]: https://codeclimate.com/github/richtier/alexa-browser-client/badges/gpa.svg
 [code-climate]: https://codeclimate.com/github/richtier/alexa-browser-client
 
-[circle-ci-image]: https://circleci.com/gh/richtier/alexa-browser-client/tree/master.svg?style=svg
+[codecov-image]: https://codecov.io/gh/richtier/alexa-browser-client/branch/master/graph/badge.svg
+[codecov]: https://codecov.io/gh/richtier/alexa-browser-client
+
+[circle-ci-image]: https://circleci.com/gh/richtier/alexa-browser-client/tree/master.svg?style=shield
 [circle-ci]: https://circleci.com/gh/richtier/alexa-browser-client/tree/master
+
+[django-version-image]: https://img.shields.io/pypi/djversions/alexa-browser-client.svg
+
+[pypi-image]: https://badge.fury.io/py/alexa-browser-client.svg
+[pypi]: https://badge.fury.io/py/alexa-browser-client
