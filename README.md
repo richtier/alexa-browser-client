@@ -16,10 +16,13 @@ The demo should really be heard, so click the gif below to view it in youtube.
 
 [![Demo](https://j.gifs.com/qY4qBy.gif)](https://youtu.be/cm19aa6x9VY)
 
-### Run the demo
+## Run the demo
 
-#### Install
+First follow these steps:
 
+1. [Configure your Amazon oauth configuration](#refresh-token)
+2. [Set your environment variables](#authentication)
+3. Install:
 ```sh
 $ git clone git@github.com:richtier/alexa-browser-client.git
 $ cd alexa-browser-client
@@ -27,43 +30,8 @@ $ virtualenv .venv -p python3.6
 $ source .venv/bin/activate
 $ pip install -r requirements-dev.txt
 ```
-
-[Compile snowboy](#snowboy)
-[Configure your Amazon oauth configuration](#refresh-token)
-[Set your environment variables](#authentication)
-
-#### Run
-
-```sh
-$ make demo
-```
-
-
-## Dependencies ##
-
-This project depends on:
-- [django-channels](https://channels.readthedocs.io/en/stable/).
-- [Snowboy](https://github.com/Kitt-AI/snowboy#compile-a-python-wrapper)
-
-Install and configure those first.
-
-### Snowboy ###
-[Snowboy](https://github.com/Kitt-AI/snowboy#compile-a-python-wrapper) detects when the wakeword "Alexa" is uttered.
-
-You must compile [Snowboy](https://github.com/Kitt-AI/snowboy#compile-a-python-wrapper) manually. Copy the compiled `snowboy` folder to the top level of you project. By default, the folder structure should be:
-```
-.
-├── ...
-├── snowboy
-|   ├── snowboy-detect-swig.cc
-|   ├── snowboydetect.py
-|   └── resources
-|       ├── alexa.umdl
-|       └── common.res
-└── ...
-```
-
-If the default folder structure does not suit your needs you can [customize the wakeword detector](#wakeword).
+4. [Compile snowboy](#snowboy)
+5. `$ make demo`
 
 ## Installation
 
@@ -82,6 +50,25 @@ INSTALLED_APPS = [
     'alexa_browser_client',
 ]
 ```
+
+## Dependencies
+
+[Snowboy](https://github.com/Kitt-AI/snowboy#compile-a-python-wrapper) detects when the wakeword "Alexa" is uttered.
+
+You must compile [Snowboy](https://github.com/Kitt-AI/snowboy#compile-a-python-wrapper) manually. Copy the compiled `snowboy` folder to the top level of you project. By default, the folder structure should be:
+```
+.
+├── ...
+├── snowboy
+|   ├── snowboy-detect-swig.cc
+|   ├── snowboydetect.py
+|   └── resources
+|       ├── alexa.umdl
+|       └── common.res
+└── ...
+```
+
+If the default folder structure does not suit your needs you can [customize the wakeword detector](#wakeword).
 
 ### Routing and urls
 Add `url(r'^', include('alexa_browser_client.config.urls')),` to `urls.py` `url_patterns`.
@@ -156,21 +143,6 @@ channel_routing = [
     consumers.CustomAlexaConsumer.as_route(path='/'),
 ]
 
-```
-
-## Unit test ##
-
-To run the unit tests, call the following commands:
-
-```sh
-pip install -r requirements-dev.txt
-./scripts/tests.sh
-```
-
-To test a specific file, call the following command:
-
-```sh
-./scripts/tests.sh /path/to/test-file.py
 ```
 
 ## Versioning
