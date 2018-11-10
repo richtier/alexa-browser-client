@@ -16,6 +16,28 @@ The demo should really be heard, so click the gif below to view it in youtube.
 
 [![Demo](https://j.gifs.com/qY4qBy.gif)](https://youtu.be/cm19aa6x9VY)
 
+### Run the demo
+
+#### Install
+
+```sh
+$ git clone git@github.com:richtier/alexa-browser-client.git
+$ cd alexa-browser-client
+$ virtualenv .venv -p python3.6
+$ source .venv/bin/activate
+$ pip install -r requirements-dev.txt
+```
+
+[Compile snowboy](#snowboy)
+[Configure your Amazon oauth configuration](#refresh-token)
+[Set your environment variables](#authentication)
+
+#### Run
+
+```sh
+$ make demo
+```
+
 
 ## Dependencies ##
 
@@ -72,10 +94,10 @@ This app uses Alexa Voice Service. To use AVS you must first have a [developer a
 
 Ensure you update your settings.py:
 
-| Setting                             | Notes                                 |
-| ----------------------------------- | ------------------------------------- |
-| `ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID`     | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
-| `ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET` | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
+| Setting                                   | Notes                                 |
+| ----------------------------------------- | ------------------------------------- |
+| `ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID`      | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
+| `ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET`  | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
 | `ALEXA_BROWSER_CLIENT_AVS_DEVICE_TYPE_ID` | Retrieve by reading "Product ID" [here](https://developer.amazon.com/avs/home.html#/avs/home) |
 
 ### Refresh token ###
