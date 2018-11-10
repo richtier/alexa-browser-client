@@ -5,9 +5,17 @@ import pytest
 
 from django.urls import reverse
 
-from alexa_browser_client.refreshtoken.constants import (
-    SESSION_KEY_REDIRECT_URL, SESSION_KEY_REFRESH_TOKEN
-)
+from alexa_browser_client import constants, views
+
+
+def test_alexa_browser_client_view(client):
+    response = client.get(reverse('alexa-browser-client'))
+
+    assert response.status_code == 200
+    assert response.template_name == [
+        views.AlexaBrowserClientView.template_name
+    ]
+    assert response.context_data['websocket_url'] == 'ws://testserver/'
 
 
 @patch.object(AmazonOauth2RequestManager, 'get_authorization_request_url')
@@ -32,9 +40,10 @@ def test_authorization_request_redirect_view(
 def test_authorization_grant_view(
     mock_get_authorizarization_grant_params, client, requests_mocker
 ):
+    expected = 'my-refresh-token'
     requests_mocker.post(
         AmazonOauth2RequestManager.authorization_grant_url,
-        json={'refresh_token': 'my-refresh-token'}
+        json={'refresh_token': expected}
     )
     mock_get_authorizarization_grant_params.return_value = {'code': 'my-code'}
 
@@ -51,7 +60,7 @@ def test_authorization_grant_view(
         callback_url='http://testserver/refreshtoken/callback/'
     )
 
-    assert client.session[SESSION_KEY_REFRESH_TOKEN] == 'my-refresh-token'
+    assert client.session[constants.SESSION_KEY_REFRESH_TOKEN] == expected
 
 
 @patch.object(AmazonOauth2RequestManager, 'get_authorizarization_grant_params')
@@ -89,7 +98,7 @@ def test_refreshtoken_redirect_url(client):
         reverse('refreshtoken'), {'redirect_url': redirect_url}
     )
 
-    assert client.session[SESSION_KEY_REDIRECT_URL] == redirect_url
+    assert client.session[constants.SESSION_KEY_REDIRECT_URL] == redirect_url
 
 
 @patch.object(AmazonOauth2RequestManager, 'get_authorizarization_grant_params')

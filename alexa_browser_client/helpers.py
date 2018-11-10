@@ -3,9 +3,10 @@ import command_lifecycle
 
 class AudioLifecycle(command_lifecycle.BaseAudioLifecycle):
     audio_converter_class = command_lifecycle.helpers.WebAudioToWavConverter
+    filelike_wrapper_class = command_lifecycle.helpers.LifeCycleFileLike
 
-    def __init__(self,
-        on_command_started, on_command_finished, *args, **kwargs
+    def __init__(
+        self, on_command_started, on_command_finished, *args, **kwargs
     ):
         self.on_command_started = on_command_started
         self.on_command_finished = on_command_finished
@@ -13,7 +14,7 @@ class AudioLifecycle(command_lifecycle.BaseAudioLifecycle):
 
     @property
     def as_file(self):
-        return command_lifecycle.helpers.LifeCycleFileLike(self)
+        return self.filelike_wrapper_class(self)
 
     def handle_command_started(self):
         super().handle_command_started()

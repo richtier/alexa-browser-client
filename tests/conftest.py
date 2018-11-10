@@ -1,4 +1,5 @@
-from unittest.mock import patch, PropertyMock
+from unittest import mock
+
 import requests_mock
 import pytest
 
@@ -12,8 +13,10 @@ def pytest_configure():
         ROOT_URLCONF='alexa_browser_client.config.urls',
         CHANNEL_LAYERS={
             'default': {
-                'BACKEND': 'asgiref.inmemory.ChannelLayer',
-                'ROUTING': 'tests.config.routing.channel_routing',
+                'BACKEND': 'channels_redis.core.RedisChannelLayer',
+                'CONFIG': {
+                    'hosts': [('localhost', 6379)],
+                },
             },
         },
         INSTALLED_APPS=[
@@ -53,7 +56,9 @@ def mock_snowboy(request):
         'command_lifecycle.wakeword.SnowboyWakewordDetector.'
         'wakeword_library_import_path'
     )
-    stub = patch(path, PropertyMock(return_value='unittest.mock.Mock'))
+    stub = mock.patch(
+        path, mock.PropertyMock(return_value='unittest.mock.Mock')
+    )
     yield stub.start()
     stub.stop()
 
@@ -64,10 +69,3 @@ def requests_mocker():
     m.start()
     yield m
     m.stop()
-
-
-@pytest.fixture(autouse=True)
-def mock_client_connect():
-    stub = patch('avs_client.AlexaVoiceServiceClient.connect')
-    yield stub.start()
-    stub.stop()

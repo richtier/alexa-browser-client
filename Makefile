@@ -2,7 +2,7 @@ lint:
 	flake8 --exclude=.venv,venv,snowboy,build
 
 
-pytest:
+test:
 	pytest $1 \
 		--ignore=venv \
 		--ignore=.venv \
@@ -25,8 +25,8 @@ publish:
 	twine upload dist/*
 
 
-run_demo:
+demo:
 	python3 ./demo/manage.py runserver
 
 
-.PHONY: lint pytest run_demo publish_test publish
+.PHONY: lint pytest demo publish_test publish

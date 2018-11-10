@@ -5,10 +5,11 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from django.views.generic.edit import FormView
 
-from . import constants, forms
+from alexa_browser_client import constants, forms
 
 
 class Oauth2Mixin:
@@ -81,3 +82,16 @@ class AmazonOauth2AuthorizationGrantView(
     def cache_refresh_token(self, refresh_token):
         key = constants.SESSION_KEY_REFRESH_TOKEN
         self.request.session[key] = refresh_token
+
+
+class AlexaBrowserClientView(TemplateView):
+    template_name = 'alexa_browser_client/alexa-browser-client.html'
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(
+            **kwargs, websocket_url=self.get_websocket_url(),
+        )
+
+    def get_websocket_url(self):
+        url = self.request.build_absolute_uri('/')
+        return url.replace(self.request.scheme, 'ws')
