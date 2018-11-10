@@ -41,7 +41,8 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            /bin/bash ./scripts/test.sh
+            make lint
+            make pytest
 
       - run:
           name: report coverage

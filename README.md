@@ -3,6 +3,8 @@
 [![code-climate-image]][code-climate]
 [![circle-ci-image]][circle-ci]
 [![codecov-image]][codecov]
+[![pypi-image]][pypi]
+[![django-version-image]][pypi]
 
 **Alexa client in your browser. Django app. Talk to Alexa from your desktop, phone, or tablet browser.**
 
@@ -14,32 +16,22 @@ The demo should really be heard, so click the gif below to view it in youtube.
 
 [![Demo](https://j.gifs.com/qY4qBy.gif)](https://youtu.be/cm19aa6x9VY)
 
+## Run the demo
 
-## Dependencies ##
+First follow these steps:
 
-This project depends on:
-- [django-channels](https://channels.readthedocs.io/en/stable/).
-- [Snowboy](https://github.com/Kitt-AI/snowboy#compile-a-python-wrapper)
-
-Install and configure those first.
-
-### Snowboy ###
-[Snowboy](https://github.com/Kitt-AI/snowboy#compile-a-python-wrapper) detects when the wakeword "Alexa" is uttered.
-
-You must compile [Snowboy](https://github.com/Kitt-AI/snowboy#compile-a-python-wrapper) manually. Copy the compiled `snowboy` folder to the top level of you project. By default, the folder structure should be:
+1. [Configure your Amazon oauth configuration](#refresh-token)
+2. [Set your environment variables](#authentication)
+3. Install:
+```sh
+$ git clone git@github.com:richtier/alexa-browser-client.git
+$ cd alexa-browser-client
+$ virtualenv .venv -p python3.6
+$ source .venv/bin/activate
+$ pip install -r requirements-dev.txt
 ```
-.
-├── ...
-├── snowboy
-|   ├── snowboy-detect-swig.cc
-|   ├── snowboydetect.py
-|   └── resources
-|       ├── alexa.umdl
-|       └── common.res
-└── ...
-```
-
-If the default folder structure does not suit your needs you can [customize the wakeword detector](#wakeword).
+4. [Compile snowboy](#snowboy)
+5. `$ make demo`
 
 ## Installation
 
@@ -59,6 +51,25 @@ INSTALLED_APPS = [
 ]
 ```
 
+## Dependencies
+
+[Snowboy](https://github.com/Kitt-AI/snowboy#compile-a-python-wrapper) detects when the wakeword "Alexa" is uttered.
+
+You must compile [Snowboy](https://github.com/Kitt-AI/snowboy#compile-a-python-wrapper) manually. Copy the compiled `snowboy` folder to the top level of you project. By default, the folder structure should be:
+```
+.
+├── ...
+├── snowboy
+|   ├── snowboy-detect-swig.cc
+|   ├── snowboydetect.py
+|   └── resources
+|       ├── alexa.umdl
+|       └── common.res
+└── ...
+```
+
+If the default folder structure does not suit your needs you can [customize the wakeword detector](#wakeword).
+
 ### Routing and urls
 Add `url(r'^', include('alexa_browser_client.config.urls')),` to `urls.py` `url_patterns`.
 
@@ -70,10 +81,10 @@ This app uses Alexa Voice Service. To use AVS you must first have a [developer a
 
 Ensure you update your settings.py:
 
-| Setting                             | Notes                                 |
-| ----------------------------------- | ------------------------------------- |
-| `ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID`     | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
-| `ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET` | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
+| Setting                                   | Notes                                 |
+| ----------------------------------------- | ------------------------------------- |
+| `ALEXA_BROWSER_CLIENT_AVS_CLIENT_ID`      | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
+| `ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET`  | Retrieve by clicking on the your product listed [here](https://developer.amazon.com/avs/home.html#/avs/home)   |
 | `ALEXA_BROWSER_CLIENT_AVS_DEVICE_TYPE_ID` | Retrieve by reading "Product ID" [here](https://developer.amazon.com/avs/home.html#/avs/home) |
 
 ### Refresh token ###
@@ -134,21 +145,6 @@ channel_routing = [
 
 ```
 
-## Unit test ##
-
-To run the unit tests, call the following commands:
-
-```sh
-pip install -r requirements-dev.txt
-./scripts/tests.sh
-```
-
-To test a specific file, call the following command:
-
-```sh
-./scripts/tests.sh /path/to/test-file.py
-```
-
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [PyPI](https://pypi.org/project/alexa-browser-client/#history).
@@ -160,5 +156,13 @@ This project uses [Voice Command Lifecycle](https://github.com/richtier/voice-co
 [code-climate-image]: https://codeclimate.com/github/richtier/alexa-browser-client/badges/gpa.svg
 [code-climate]: https://codeclimate.com/github/richtier/alexa-browser-client
 
-[circle-ci-image]: https://circleci.com/gh/richtier/alexa-browser-client/tree/master.svg?style=svg
+[codecov-image]: https://codecov.io/gh/richtier/alexa-browser-client/branch/master/graph/badge.svg
+[codecov]: https://codecov.io/gh/richtier/alexa-browser-client
+
+[circle-ci-image]: https://circleci.com/gh/richtier/alexa-browser-client/tree/master.svg?style=shield
 [circle-ci]: https://circleci.com/gh/richtier/alexa-browser-client/tree/master
+
+[django-version-image]: https://img.shields.io/pypi/djversions/alexa-browser-client.svg
+
+[pypi-image]: https://badge.fury.io/py/alexa-browser-client.svg
+[pypi]: https://badge.fury.io/py/alexa-browser-client
