@@ -38,4 +38,4 @@ demo:
 	python3 ./demo/manage.py runserver
 
 
-.PHONY: lint pytest demo publish_test publish
+.PHONY: lint test demo publish_test publish

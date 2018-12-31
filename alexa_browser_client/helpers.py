@@ -17,8 +17,11 @@ class AudioLifecycle(command_lifecycle.BaseAudioLifecycle):
         return self.filelike_wrapper_class(self)
 
     def handle_command_started(self):
+        wakeword_name = self.audio_detector.get_uttered_wakeword_name(
+            self.audio_buffer
+        )
         super().handle_command_started()
-        self.on_command_started()
+        self.on_command_started(wakeword_name=wakeword_name)
 
     def handle_command_finised(self):
         super().handle_command_finised()

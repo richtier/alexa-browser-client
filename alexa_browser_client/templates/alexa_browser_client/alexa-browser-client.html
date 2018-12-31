@@ -7,6 +7,8 @@
     <h1 id="status-label" style="font-size: 60px;"></h1>
     <script type="text/javascript">
       var statusLabel = document.getElementById('status-label');
+      var isPlaying = false;
+      var playQueue = [];
 
       function sendAudio(event) {
         if (socket.readyState == WebSocket.OPEN) {
@@ -15,13 +17,20 @@
         }
       }
 
-      function playAudio(samples) {
-        var source = context.createBufferSource();
-        context.decodeAudioData(samples, function(audioDataBuffer) {
-          source.buffer = audioDataBuffer;
-          source.connect(context.destination);
-          source.start(0);
-        });
+      function playAudioQueue(){
+        if (!isPlaying && playQueue.length > 0) {
+          var samples = playQueue.shift();
+          var source = context.createBufferSource();
+          source.onended = function() {
+            isPlaying = false;
+          }
+          context.decodeAudioData(samples, function(audioDataBuffer) {
+            source.buffer = audioDataBuffer;
+            source.connect(context.destination);
+            isPlaying = true;
+            source.start(0);
+          });
+        }
       }
 
       function handleGetUserMediaSuccess(stream) {
@@ -30,11 +39,12 @@
         recorder.onaudioprocess = sendAudio;
         audioInput.connect(recorder);
         recorder.connect(context.destination);
+        setInterval(playAudioQueue, 100);
       }
 
       function handleWebsocketMessage(event) {
         if (event.data instanceof ArrayBuffer) {
-          playAudio(event.data);
+          playQueue.push(event.data);
         } else {
           var message = JSON.parse(event.data);
           if (message.type == 'EXPECTING_COMMAND') {
