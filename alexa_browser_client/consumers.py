@@ -86,13 +86,13 @@ class AlexaConsumer(LifecycleMixin, AlexaClientMixin, WebsocketConsumer):
     def send_status(self, message_id):
         self.send(text_data=json.dumps({'type': message_id}))
 
-    def handle_command_started(self):
+    def handle_command_started(self, wakeword_name):
         super().handle_command_started()
         thr = threading.Thread(target=self.send_command_to_avs)
         thr.start()
 
     def send_command_to_avs(self):
         audio_file = self.audio_lifecycle.as_file
-        output_audio = self.alexa_client.send_audio_file(audio_file)
-        if output_audio:
-            self.send(bytes_data=output_audio)
+        for directive in self.alexa_client.send_audio_file(audio_file):
+            if directive.name in ['Speak', 'Play']:
+                self.send(bytes_data=directive.audio_attachment)

@@ -37,9 +37,12 @@ def test_audio_lifecycle_audio_detector_class():
 def test_audio_lifecycle_handle_command_started(
     lifecycle, handle_command_started
 ):
+    lifecycle.audio_detector.get_uttered_wakeword_name.return_value = 'ALEXA'
+
     assert handle_command_started.call_count == 0
     lifecycle.handle_command_started()
     assert handle_command_started.call_count == 1
+    assert handle_command_started.call_args == mock.call(wakeword_name='ALEXA')
 
 
 def test_audio_lifecycle_handle_command_finised(
