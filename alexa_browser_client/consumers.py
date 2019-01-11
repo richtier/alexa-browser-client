@@ -83,6 +83,14 @@ class LifecycleMixin:
 
 class AlexaConsumer(LifecycleMixin, AlexaClientMixin, WebsocketConsumer):
 
+    dialog_request_id = None
+
+    def receive(self, text_data=None, bytes_data=None):
+        if text_data == 'ExpectSpeech':
+            self.audio_lifecycle.handle_command_started(None)
+        else:
+            super().receive(text_data=text_data, bytes_data=bytes_data)
+
     def send_status(self, message_id):
         self.send(text_data=json.dumps({'type': message_id}))
 
@@ -92,7 +100,17 @@ class AlexaConsumer(LifecycleMixin, AlexaClientMixin, WebsocketConsumer):
         thr.start()
 
     def send_command_to_avs(self):
-        audio_file = self.audio_lifecycle.as_file
-        for directive in self.alexa_client.send_audio_file(audio_file):
+        directives = self.alexa_client.send_audio_file(
+            self.audio_lifecycle.as_file,
+            dialog_request_id=self.dialog_request_id
+        )
+        self.dialog_request_id = None
+        for directive in (directives or []):
+            if directive.name == 'ExpectSpeech':
+                headers = directive.directive['header']
+                self.dialog_request_id = headers['dialogRequestId']
+                self.send_status('ExpectSpeech')
             if directive.name in ['Speak', 'Play']:
                 self.send(bytes_data=directive.audio_attachment)
+        else:
+            self.send_status(constants.EXPECTING_WAKEWORD)
