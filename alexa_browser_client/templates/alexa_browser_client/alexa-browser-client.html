@@ -8,29 +8,39 @@
     <script type="text/javascript">
       var statusLabel = document.getElementById('status-label');
       var isPlaying = false;
-      var playQueue = [];
+      var directiveQueue = [];
+
+      function send(contents) {
+        socket.readyState === WebSocket.OPEN && socket.send(contents);
+      }
 
       function sendAudio(event) {
-        if (socket.readyState == WebSocket.OPEN) {
-          var samples = event.inputBuffer.getChannelData(0);
-          socket.send(samples);
+        send(event.inputBuffer.getChannelData(0));
+      }
+
+      function consumeDirectiveQueue(){
+        if (directiveQueue.length > 0 && !isPlaying) {
+          var directive = directiveQueue.shift();
+          updateStatusLabel(directive.name);
+          if (directive.name == 'Speak') {
+            playAudio(directive.payload);
+          } else if (directive.name == 'ExpectSpeech') {
+            send('ExpectSpeech');
+          }
         }
       }
 
-      function playAudioQueue(){
-        if (!isPlaying && playQueue.length > 0) {
-          var samples = playQueue.shift();
-          var source = context.createBufferSource();
-          source.onended = function() {
-            isPlaying = false;
-          }
-          context.decodeAudioData(samples, function(audioDataBuffer) {
-            source.buffer = audioDataBuffer;
-            source.connect(context.destination);
-            isPlaying = true;
-            source.start(0);
-          });
+      function playAudio(samples) {
+        var source = context.createBufferSource();
+        source.onended = function() {
+          isPlaying = false;
         }
+        context.decodeAudioData(samples, function(audioDataBuffer) {
+          source.buffer = audioDataBuffer;
+          source.connect(context.destination);
+          isPlaying = true;
+          source.start(0);
+        });
       }
 
       function handleGetUserMediaSuccess(stream) {
@@ -39,29 +49,35 @@
         recorder.onaudioprocess = sendAudio;
         audioInput.connect(recorder);
         recorder.connect(context.destination);
-        setInterval(playAudioQueue, 100);
+        setInterval(consumeDirectiveQueue, 100);
       }
 
       function handleWebsocketMessage(event) {
         if (event.data instanceof ArrayBuffer) {
-          playQueue.push(event.data);
+          directiveQueue.push({'name': 'Speak', 'payload': event.data});
         } else {
           var message = JSON.parse(event.data);
-          if (message.type == 'EXPECTING_COMMAND') {
-            statusLabel.innerText = 'Listening...';
-          } else if (message.type == 'EXPECTING_WAKEWORD') {
-            statusLabel.innerText = 'Say "Alexa"';
-          } else if (message.type == 'CONNECTING') {
-            statusLabel.innerText = 'Connecting to Alexa';
-          }
+          directiveQueue.push({'name': message.type})
+        }
+      }
+
+      function updateStatusLabel(messageId) {
+        if (messageId == 'EXPECTING_COMMAND') {
+          statusLabel.innerText = 'Listening...';
+        } else if (messageId === 'EXPECTING_WAKEWORD') {
+          statusLabel.innerText = 'Say "Alexa"';
+        } else if (messageId === 'CONNECTING') {
+          statusLabel.innerText = 'Connecting to Alexa';
+        } else if (messageId === 'Speak') {
+          statusLabel.innerText = 'Alexa is talking'
         }
       }
 
       function handleWebsocketClose(event) {
-         if (event.code == 3000) {
-            statusLabel.innerText = 'Login required. redirecting...'
-            setTimeout(handleLoginRequired, 1000);
-          }
+       if (event.code == 3000) {
+          statusLabel.innerText = 'Login required. redirecting...'
+          setTimeout(handleLoginRequired, 1000);
+        }
       }
 
       function handleLoginRequired() {
@@ -76,7 +92,7 @@
       }
 
       function websocketReconnectionMangaer(){
-        socket.readyState == WebSocket.CLOSED && createWebsocket();
+        socket.readyState === WebSocket.CLOSED && createWebsocket();
       }
 
       var context = new window.AudioContext();

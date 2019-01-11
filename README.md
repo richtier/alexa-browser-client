@@ -28,7 +28,7 @@ $ git clone git@github.com:richtier/alexa-browser-client.git
 $ cd alexa-browser-client
 $ virtualenv .venv -p python3.6
 $ source .venv/bin/activate
-$ pip install -r requirements-dev.txt
+$ make test_requirements
 ```
 4. [Compile snowboy](#snowboy)
 5. `$ make demo`
@@ -133,15 +133,23 @@ class CustomAlexaConsumer(alexa_browser_client.AlexaConsumer):
     audio_lifecycle_class = CustomAudioLifecycle
 ```
 
-Then in your `routes.py`:
+Then in your `routing.py`:
 
 ```
-from my_project import consumers
+import alexa_browser_client.consumers
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.sessions import SessionMiddlewareStack
+
+from django.conf.urls import url
 
 
-channel_routing = [
-    consumers.CustomAlexaConsumer.as_route(path='/'),
-]
+application = ProtocolTypeRouter({
+    'websocket': SessionMiddlewareStack(
+        URLRouter([
+            url(r"^ws/$", alexa_browser_client.consumers.AlexaConsumer),
+        ])
+    ),
+})
 
 ```
 
