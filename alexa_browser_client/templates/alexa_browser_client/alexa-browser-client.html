@@ -1,108 +1,18 @@
+{% load static from staticfiles %}
 <html>
   <head>
     <title>Alexa Browser Client</title>
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <script src="{% static 'main.js' %}"></script>
   </head>
   <body>
     <h1 id="status-label" style="font-size: 60px;"></h1>
     <script type="text/javascript">
-      var statusLabel = document.getElementById('status-label');
-      var isPlaying = false;
-      var directiveQueue = [];
-
-      function send(contents) {
-        socket.readyState === WebSocket.OPEN && socket.send(contents);
-      }
-
-      function sendAudio(event) {
-        send(event.inputBuffer.getChannelData(0));
-      }
-
-      function consumeDirectiveQueue(){
-        if (directiveQueue.length > 0 && !isPlaying) {
-          var directive = directiveQueue.shift();
-          updateStatusLabel(directive.name);
-          if (directive.name == 'Speak') {
-            playAudio(directive.payload);
-          } else if (directive.name == 'ExpectSpeech') {
-            send('ExpectSpeech');
-          }
-        }
-      }
-
-      function playAudio(samples) {
-        var source = context.createBufferSource();
-        source.onended = function() {
-          isPlaying = false;
-        }
-        context.decodeAudioData(samples, function(audioDataBuffer) {
-          source.buffer = audioDataBuffer;
-          source.connect(context.destination);
-          isPlaying = true;
-          source.start(0);
-        });
-      }
-
-      function handleGetUserMediaSuccess(stream) {
-        var audioInput = context.createMediaStreamSource(stream);
-        var recorder = context.createScriptProcessor(4096, 1, 1);
-        recorder.onaudioprocess = sendAudio;
-        audioInput.connect(recorder);
-        recorder.connect(context.destination);
-        setInterval(consumeDirectiveQueue, 100);
-      }
-
-      function handleWebsocketMessage(event) {
-        if (event.data instanceof ArrayBuffer) {
-          directiveQueue.push({'name': 'Speak', 'payload': event.data});
-        } else {
-          var message = JSON.parse(event.data);
-          directiveQueue.push({'name': message.type})
-        }
-      }
-
-      function updateStatusLabel(messageId) {
-        if (messageId == 'EXPECTING_COMMAND') {
-          statusLabel.innerText = 'Listening...';
-        } else if (messageId === 'EXPECTING_WAKEWORD') {
-          statusLabel.innerText = 'Say "Alexa"';
-        } else if (messageId === 'CONNECTING') {
-          statusLabel.innerText = 'Connecting to Alexa';
-        } else if (messageId === 'Speak') {
-          statusLabel.innerText = 'Alexa is talking'
-        }
-      }
-
-      function handleWebsocketClose(event) {
-       if (event.code == 3000) {
-          statusLabel.innerText = 'Login required. redirecting...'
-          setTimeout(handleLoginRequired, 1000);
-        }
-      }
-
-      function handleLoginRequired() {
-        window.location.href = '{% url "refreshtoken" %}'
-      }
-
-      function createWebsocket(){
-        socket = new WebSocket('{{ websocket_url }}') ;
-        socket.binaryType = 'arraybuffer';
-        socket.onmessage = handleWebsocketMessage;
-        socket.onclose = handleWebsocketClose;
-      }
-
-      function websocketReconnectionMangaer(){
-        socket.readyState === WebSocket.CLOSED && createWebsocket();
-      }
-
-      var context = new window.AudioContext();
-      var statusLabel = document.getElementById('status-label');
-      var socket;
-      createWebsocket();
-      setInterval(websocketReconnectionMangaer, 1000);
-      navigator.mediaDevices.getUserMedia({audio:true})
-        .then(handleGetUserMediaSuccess);
-
+      AlexaBrowserClient({
+        loginUrl: '{% url "refreshtoken" %}',
+        websocketUrl: '{{ websocket_url }}',
+        statusLabel: document.getElementById('status-label'),
+      });
     </script>
   </body>
 </html>

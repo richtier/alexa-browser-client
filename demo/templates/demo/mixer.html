@@ -1,0 +1,692 @@
+{% load static from staticfiles %}
+<html>
+  <head>
+    <title>Alexa Browser Client</title>
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <script src="{% static 'main.js' %}"></script>
+    <style>
+      h1 {
+        font-size: 60px;
+        min-height: 70px;
+      }
+      label {
+        width: 200px;
+        display: inline-block;
+      }
+      fieldset {
+        display: inline-block;
+      }
+      form {
+        display: inline-block;
+        vertical-align: text-top;
+      }
+      fieldset {
+        width: 390px;
+      }
+      fieldset:disabled { 
+          background-color: #efefef;
+      }
+      fieldset::before {
+        content: 'Status: enabled';
+        margin-bottom: 20px;
+        display: inline-block;
+      }
+      fieldset:disabled::before {
+        content: 'Status: disabled';
+      }
+      select {
+        height: 26px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="status-label"></h1>
+    <form name="Chorus">
+      <h2>
+        <input
+          type="checkbox" name="enabled""
+          onchange="this.form.fields.disabled=!this.checked"
+        />
+        Chorus
+      </h2>
+      <fieldset name="fields" id="chorus_fieldset" disabled>
+        <div>
+          <label for="chorus_feedback">Feedback</label>
+          <input
+            id="chorus_feedback" type="range" name="feedback"
+            step="0.05" min="0" max="0.95" value="0.4"
+            onchange="chorus_feedback_display.value=value"
+          />
+          <output id="chorus_feedback_display" for="chorus_feedback">0.4</output>
+        </div>
+        <div>
+          <label for="chorus_delay">Delay</label>
+          <input
+            id="chorus_delay" type="range" name="delay"
+            step="0.05" min="0" max="1" value="0.05"
+            onchange="chorus_delay_display.value=value"
+          />
+          <output id="chorus_delay_display">0.05</output>
+        </div>
+        <div>
+          <label for="chorus_delay">Depth</label>
+          <input
+            id="chorus_depth" type="range" name="depth"
+            step="0.05" min="0" max="8" value="0.7"
+            onchange="chorus_depth_display.value=value"
+          />
+          <output id="chorus_depth_display">0.7</output>
+        </div>
+        <div>
+          <label for="chorus_rate">Rate</label>
+          <input
+            id="chorus_rate" type="range" name="rate"
+            step="0.25" min="0" max="8" value="1.5"
+            onchange="chorus_rate_display.value=value"
+          />
+          <output id="chorus_rate_display">1.5</output>
+        </div>
+        <div>
+          <label for="chorus_bypass">Bypass</label>
+          <input
+            id="chorus_bypass" type="range" name="bypass"
+            step="1" min="0" max="1" value="1"
+            onchange="chorus_bypass_display.value=value"
+          />
+          <output id="chorus_bypass_display">1</output>
+        </div>
+      </fieldset>
+    </form>
+
+    <form name="Delay">
+      <h2>
+        <input
+          type="checkbox" name="enabled"
+          onchange="this.form.fields.disabled=!this.checked"
+        />
+        Delay
+      </h2>
+      <fieldset name="fields" id="delay_fieldset" disabled>
+        <div>
+          <label for="delay_delayTime">Delay Time</label>
+          <input
+            id="delay_delayTime" type="range" name="delay"
+            step="20" min="20" max="1000" value="100"
+            onchange="delay_delayTime_display.value=value"
+          />
+          <output id="delay_delayTime_display">100</output>
+        </div>
+        <div>
+          <label for="delay_feedback">Feedback</label>
+          <input
+            id="delay_feedback" type="range" name="feedback"
+            step="0.05" min="0" max="0.9" value="0.1"
+            onchange="delay_feedback_display.value=value"
+          />
+          <output id="delay_feedback_display">0.1</output>
+        </div>
+        <div>
+          <label for="delay_cutoff">Cutoff</label>
+          <input
+            id="delay_cutoff" type="range" name="cutoff"
+            step="50" min="50" max="20000" value="100"
+            onchange="delay_cutoff_display.value=value"
+          />
+          <output id="delay_cutoff_display">100</output>
+        </div>
+        <div>
+          <label for="delay_wetlevel">Wet Level</label>
+          <input
+            id="delay_wetlevel" type="range" name="wetLevel"
+            step="0.05" min="0" max="1" value="0.05"
+            onchange="delay_wetlevel_display.value=value"
+          />
+          <output id="delay_wetlevel_display">0.05</output>
+        </div>
+        <div>
+          <label for="delay_drylevel">Dry Level</label>
+          <input
+            id="delay_drylevel" type="range" name="dryLevel"
+            step="0.05" min="0" max="1" value="1"
+            onchange="delay_drylevel_display.value=value"
+          />
+          <output id="delay_drylevel_display">1</output>
+        </div>
+      </fieldset>
+    </form>
+
+    <form name="Overdrive">
+      <h2>
+        <input
+          type="checkbox" name="enabled"
+          onchange="this.form.fields.disabled=!this.checked"
+        />
+        Overdrive
+      </h2>
+      <fieldset name="fields" disabled>
+        <div>
+          <label for="overdrive_drive">Drive</label>
+          <input
+            id="overdrive_drive" type="range" name="drive"
+            step="0.05" min="0" max="1" value="0.7"
+            onchange="overdrive_drive_display.value=value"
+          />
+          <output id="overdrive_drive_display">0.7</output>
+        </div>
+        <div>
+          <label for="overdrive_gain">Gain</label>
+          <input
+            id="overdrive_gain" type="range" name='outputGain'
+            step="0.05" min="0" max="1" value="0.5"
+            onchange="overdrive_gain_display.value=value"
+          />
+          <output id="overdrive_gain_display">0.5</output>
+        </div>
+        <div>
+          <label for="overdrive_curveAmount">Curve amount</label>
+          <input
+            id="overdrive_curveAmount" type="range" name="curveAmount"
+            step="0.05" min="0" max="1" value="1"
+            onchange="overdrive_curveAmount_display.value=value"
+          />
+          <output id="overdrive_curveAmount_display">1</output>
+        </div>
+        <div>
+          <label for="overdrive_algorithmIndex">Algorithm index</label>
+          <input
+            id="overdrive_algorithmIndex" type="range" name="algorithmIndex"
+            step="1" min="0" max="5" value="0"
+            onchange="overdrive_algorithmIndex_display.value=value"
+          />
+          <output id="overdrive_algorithmIndex_display">0</output>
+        </div>
+        <div>
+          <label for="overdrive_bypass">Bypass</label>
+          <input
+            id="overdrive_bypass" type="range" name="bypass"
+            step="1" min="0" max="1" value="1"
+            onchange="overdrive_bypass_display.value=value"
+          />
+          <output id="overdrive_bypass_display">1</output>
+        </div>
+      </fieldset>
+    </form>
+
+    <form name="Filter">
+      <h2>
+        <input
+          type="checkbox" name="enabled" 
+          onchange="this.form.fields.disabled=!this.checked"
+        />
+        Filter
+      </h2>
+      <fieldset name="fields" disabled>
+        <div>
+          <label for="filter_filterType">Filter type</label>
+          <select id="filter_filterType">
+            <option value="lowpass">Lowpass</option>
+            <option value="highpass">Highpass</option>
+            <option value="bandpass">Bandpass</option>
+            <option value="lowshelf">Lowshelf</option>
+            <option value="highshelf">Highshelf</option>
+            <option value="peaking">Peaking</option>
+            <option value="notch">Notch</option>
+            <option value="allpass">Allpass</option>
+          </select>
+        </div>
+        <div>
+          <label for="filter_frequency">Frequency</label>
+          <input
+            id="filter_frequency" type="range" name="frequency"
+            step="50" min="50" max="22050" value="440"
+            onchange="filter_frequency_display.value=value"
+          />
+          <output id="filter_frequency_display">440</output>
+        </div>
+        <div>
+          <label for="filter_q">Q</label>
+          <input
+            id="filter_q" type="range" name="Q"
+            step="2" min="2" max="100" value="16"
+            onchange="filter_q_display.value=value"
+          />
+          <output id="filter_q_display">16</output>
+        </div>
+        <div>
+          <label for="filter_gain">Gain</label>
+          <input
+            id="filter_gain" type="range" name="gain"
+            step="2" min="-40" max="40" value="10"
+            onchange="filter_gain_display.value=value"
+          />
+          <output id="filter_gain_display">10</output>
+        </div>
+        <div>
+          <label for="filter_bypass">Bypass</label>
+          <input
+            id="filter_bypass" type="range" name="bypass"
+            step="1" min="0" max="1" value="1"
+            onchange="filter_bypass_display.value=value"
+          />
+          <output id="filter_bypass_display">1</output>
+        </div>
+      </fieldset>
+    </form>
+
+    <form name="Phaser">
+      <h2>
+        <input
+          type="checkbox" name="enabled"
+          onchange="this.form.fields.disabled=!this.checked"
+        />
+        Phaser
+      </h2>
+      <fieldset name="fields" disabled>
+        <div>
+          <label for="phaser_rate">Rate</label>
+          <input
+            id="phaser_rate" type="range" name="rate"
+            step="0.1" min="0" max="8" value="1.2"
+            onchange="phaser_rate_display.value=value"
+          />
+          <output id="phaser_rate_display">1.2</output>
+        </div>
+        <div>
+          <label for="phaser_depth">Depth</label>
+          <input
+            id="phaser_depth" type="range" name="depth"
+            step="0.05" min="0" max="1" value="0.3"
+            onchange="phaser_depth_display.value=value"
+          />
+          <output id="phaser_depth_display">0.3</output>
+        </div>
+        <div>
+          <label for="phaser_feedback">Feedback</label>
+          <input
+            id="phaser_feedback" type="range" name="feedback"
+            step="0.05" min="0" max="1" value="0.2"
+            onchange="phaser_feedback_display.value=value"
+          />
+          <output id="phaser_feedback_display">0.2</output>
+        </div>
+        <div>
+          <label for="phaser_stereoPhase">Stereo phase</label>
+          <input
+            id="phaser_stereoPhase" type="range" name="stereoPhase"
+            step="10" min="0" max="180" value="30"
+            onchange="phaser_stereoPhase_display.value=value"
+          />
+          <output id="phaser_stereoPhase_display">30</output>
+        </div>
+        <div>
+          <label for="phaser_baseModulationFrequency">Base modulation frequency</label>
+          <input
+            id="phaser_baseModulationFrequency" type="range" name="baseModulationFrequency"
+            step="100" min="500" max="1500" value="700"
+            onchange="phaser_baseModulationFrequency_display.value=value"
+          />
+          <output id="phaser_baseModulationFrequency_display">700</output>
+        </div>
+        <div>
+          <label for="phaser_bypass">Bypass</label>
+          <input
+            id="phaser_bypass" type="range" name="bypass"
+            step="1" min="0" max="1" value="1"
+            onchange="phaser_bypass_display.value=value"
+          />
+          <output id="phaser_bypass_display">1</output>
+        </div>
+      </fieldset>
+    </form>
+
+    <form name="WahWah">
+      <h2>
+        <input
+          type="checkbox" name="enabled"
+          onchange="this.form.fields.disabled=!this.checked"
+        />
+        Wah Wah
+      </h2>
+      <fieldset name="fields" disabled>
+        <div>
+          <label for="wahwah_automode">Automode</label>
+          <input id="wahwah_automode" type="checkbox" name="automode" />
+        </div>
+        <div>
+          <label for="wahwah_baseFrequency">Base frequency</label>
+          <input
+            id="wahwah_baseFrequency" type="range" name="baseFrequency"
+            step="0.1" min="0" max="1" value="0.5"
+            onchange="wahwah_baseFrequency_display.value=value"
+          />
+          <output id="wahwah_baseFrequency_display">0.5</output>
+        </div>
+        <div>
+          <label for="wahwah_excursionOctaves">Excursion Octaves</label>
+          <input
+            id="wahwah_excursionOctaves" type="range" name="excursionOctaves"
+            step="1" min="1" max="6" value="2"
+            onchange="wahwah_excursionOctaves_display.value=value"
+          />
+          <output id="wahwah_excursionOctaves_display">2</output>
+        </div>
+        <div>
+          <label for="wahwah_sweep">Sweep</label>
+          <input
+            id="wahwah_sweep" type="range" name="sweep"
+            step="0.1" min="0" max="1" value="0.2"
+            onchange="wahwah_sweep_display.value=value"
+          />
+          <output id="wahwah_sweep_display">0.2</output>
+        </div>
+        <div>
+          <label for="wahwah_resonance">Resonance</label>
+          <input
+            id="wahwah_resonance" type="range" name="resonance"
+            step="10" min="0" max="100" value="10"
+            onchange="wahwah_resonance_display.value=value"
+          />
+          <output id="wahwah_resonance_display">10</output>
+        </div>
+        <div>
+          <label for="wahwah_sensitivity">Sensitivity</label>
+          <input
+            id="wahwah_sensitivity" type="range" name="sensitivity"
+            step="0.5" min="-1" max="1" value="0.5"
+            onchange="wahwah_sensitivity_display.value=value"
+          />
+          <output id="wahwah_sensitivity_display">0.5</output>
+        </div>
+        <div>
+          <label for="wahwah_bypass">Bypass</label>
+          <input
+            id="wahwah_bypass" type="range" name="bypass"
+            step="" min="" max="" value=""
+            onchange="wahwah_bypass_display.value=value"
+          />
+          <output id="wahwah_bypass_display"></output>
+        </div>
+      </fieldset>
+    </form>
+
+    <form name="Compressor">
+      <h2>
+        <input
+          type="checkbox" name="enabled"
+          onchange="this.form.fields.disabled=!this.checked"
+        />
+        Compressor
+      </h2>
+      <fieldset name="fields" disabled>
+        <div>
+          <label for="compressor_threshold">Threshold</label>
+          <input
+            id="compressor_threshold" type="range" name="threshold"
+            step="5" min="-60" max="0" value="-10"
+            onchange="compressor_threshold_display.value=value"
+          />
+          <output id="compressor_threshold_display">-10</output>
+        </div>
+        <div>
+          <label for="compressor_release">Release</label>
+          <input
+            id="compressor_release" type="range" name="release"
+            step="50" min="50" max="2000" value="300"
+            onchange="compressor_release_display.value=value"
+          />
+          <output id="compressor_release_display">300</output>
+        </div>
+        <div>
+          <label for="compressor_makeupGain">Markup gain</label>
+          <input
+            id="compressor_makeupGain" type="range" name="makeupGain"
+            step="1" min="1" max="100" value="100"
+            onchange="compressor_makeupGain_display.value=value"
+          />
+          <output id="compressor_makeupGain_display">100</output>
+        </div>
+        <div>
+          <label for="compressor_attack">Attack</label>
+          <input
+            id="compressor_attack" type="range" name="attack"
+            step="20" min="0" max="1000" value="100"
+            onchange="compressor_attack_display.value=value"
+          />
+          <output id="compressor_attack_display">100</output>
+        </div>
+        <div>
+          <label for="compressor_ratio">Ratio</label>
+          <input
+            id="compressor_ratio" type="range" name="ratio"
+            step="2" min="2" max="20" value="5"
+            onchange="compressor_ratio_display.value=value"
+          />
+          <output id="compressor_ratio_display">5</output>
+        </div>
+        <div>
+          <label for="compressor_knee">Knee</label>
+          <input
+            id="compressor_knee" type="range" name="knee"
+            step="1" min="0" max="40" value="10"
+            onchange="compressor_knee_display.value=value"
+          />
+          <output id="compressor_knee_display">10</output>
+        </div>
+        <div>
+          <label for="compressor_autoMakeup">Auto makeup</label>
+          <input id="compressor_autoMakeup" type="checkbox" name="automakeup" />
+        </div>
+        <div>
+          <label for="compressor_bypass">Bypass</label>
+          <input
+            id="compressor_bypass" type="range" name="bypass"
+            step="1" min="0" max="1" value="1"
+            onchange="compressor_bypass_display.value=value"
+          />
+          <output id="compressor_bypass_display">1</output>
+        </div>
+      </fieldset>
+    </form>
+
+    <form name="Tremolo">
+      <h2>
+        <input
+          type="checkbox" name="enabled"
+          onchange="this.form.fields.disabled=!this.checked"
+        />
+        Tremolo
+      </h2>
+      <fieldset name="fields" disabled>
+        <div>
+          <label for="tremolo_intensity">Intensity</label>
+          <input
+            id="tremolo_intensity" type="range" name="intensity"
+            step="0.05" min="0" max="1" value="0.3"
+            onchange="tremolo_intensity_display.value=value"
+          />
+          <output id="tremolo_intensity_display">0.3</output>
+        </div>
+        <div>
+          <label for="tremolo_stereoPhase">Stereo phase</label>
+          <input
+            id="tremolo_stereoPhase" type="range" name="stereoPhase"
+            step="10" min="0" max="180" value="0"
+            onchange="tremolo_stereoPhase_display.value=value"
+          />
+          <output id="tremolo_stereoPhase_display">0</output>
+        </div>
+        <div>
+          <label for="tremolo_rate">Rate</label>
+          <input
+            id="tremolo_rate" type="range" name="rate"
+            step="0.2" min="0.2" max="11" value="4"
+            onchange="tremolo_rate_display.value=value"
+          />
+          <output id="tremolo_rate_display">4</output>
+        </div>
+        <div>
+          <label for="tremolo_bypass">Bypass</label>
+          <input
+            id="tremolo_bypass" type="range" name="bypass"
+            step="1" min="0" max="1" value="1"
+            onchange="tremolo_bypass_display.value=value"
+          />
+          <output id="tremolo_bypass_display">1</output>
+        </div>
+      </fieldset>
+    </form>
+
+    <form name="Bitcrusher">
+      <h2>
+        <input
+          type="checkbox" name="enabled"
+          onchange="this.form.fields.disabled=!this.checked"
+        />
+        Bit Crusher
+      </h2>
+      <fieldset name="fields" disabled>
+        <div>
+          <label for="bitCrusher_bits">Bits</label>
+          <input
+            id="bitCrusher_bits" type="range" name="bits"
+            step="1" min="1" max="16" value="4"
+            onchange="bitCrusher_bits_display.value=value"
+          />
+          <output id="bitCrusher_bits_display">4</output>
+        </div>
+        <div>
+          <label for="bitCrusher_normfreq">Normfreq</label>
+          <input
+            id="bitCrusher_normfreq" type="range" name="normfreq"
+            step="0.0025" min="0" max="1" value="0.1"
+            onchange="bitCrusher_normfreq_display.value=value"
+          />
+          <output id="bitCrusher_normfreq_display">0.1</output>
+        </div>
+        <div>
+          <label for="bitCrusher_bufferSize">Buffer size</label>
+          <select id="bitCrusher_bufferSize">
+            <option value="256">256</option>
+            <option value="512">512</option>
+            <option value="2048">2048</option>
+            <option value="4096">4096</option>
+            <option value="8192">8192</option>
+            <option value="16384">16384</option>
+          </select>
+        </div>
+      </fieldset>
+    </form>
+
+    <form name="MoogFilter">
+      <h2>
+        <input
+          type="checkbox" name="enabled"
+          onchange="this.form.fields.disabled=!this.checked"
+        />
+        Moog filter
+      </h2>
+      <fieldset name="fields" disabled>
+        <div>
+          <label for="moogFilter_cutoff">Cutoff</label>
+          <input
+            id="moogFilter_cutoff" type="range" name="cutoff"
+            step="0.005" min="0" max="1" value="0.065"
+            onchange="moogFilter_cutoff_display.value=value"
+          />
+          <output id="moogFilter_cutoff_display">0.065</output>
+        </div>
+        <div>
+          <label for="moogFilter_resonance">Resonance</label>
+          <input
+            id="moogFilter_resonance" type="range" name="resonance"
+            step="0.2" min="0" max="4" value="3.5"
+            onchange="moogFilter_resonance_display.value=value"
+          />
+          <output id="moogFilter_resonance_display">3.5</output>
+        </div>
+        <div>
+          <label for="moogFilter_bufferSize">Buffer size</label>
+          <select id="moogFilter_bufferSize">
+            <option value="256">256</option>
+            <option value="512">512</option>
+            <option value="2048">2048</option>
+            <option value="4096">4096</option>
+            <option value="8192">8192</option>
+            <option value="16384">16384</option>
+          </select>
+        </div>
+      </fieldset>
+    </form>
+
+    <form name="PingPongDelay">
+      <h2>
+        <input
+          type="checkbox" name="enabled"
+          onchange="this.form.fields.disabled=!this.checked"
+        />
+        Ping ping
+      </h2>
+      <fieldset name="fields" disabled>
+        <div>
+          <label for="pingPong_feedback">Feedback</label>
+          <input
+            id="pingPong_feedback" type="range" name="feedback"
+            step="0.05" min="0" max="1" value="0.3"
+            onchange="pingPong_feedback_display.value=value"
+          />
+          <output id="pingPong_feedback_display">0.3</output>
+        </div>
+        <div>
+          <label for="pingPong_wetLevel">Wet level</label>
+          <input
+            id="pingPong_wetLevel" type="range" name="wetLevel"
+            step="0.05" min="0" max="1" value="0.5"
+            onchange="pingPong_wetLevel_display.value=value"
+          />
+          <output id="pingPong_wetLevel_display">0.5</output>
+        </div>
+        <div>
+          <label for="pingPong_delayTimeLeft">Delay time left</label>
+          <input
+            id="pingPong_delayTimeLeft" type="range" name="delayTimeLeft"
+            step="50" min="1" max="10000" value="150"
+            onchange="pingPong_delayTimeLeft_display.value=value"
+          />
+          <output id="pingPong_delayTimeLeft_display">150</output>
+        </div>
+        <div>
+          <label for="pingPong_delayTimeRight">Delay time right</label>
+          <input
+            id="pingPong_delayTimeRight" type="range" name="delayTimeRight"
+            step="50" min="1" max="10000" value="200"
+            onchange="pingPong_delayTimeRight_display.value=value"
+          />
+          <output id="pingPong_conf_display">200</output>
+        </div>
+      </fieldset>
+    </form>
+    <script type="text/javascript">
+      AlexaBrowserClient({
+        websocketUrl: '{{ websocket_url }}',
+        loginUrl: '{% url "refreshtoken" %}',
+        statusLabel: document.getElementById('status-label'),
+        playAudioHandler: function(samples) {
+          var blob = new Blob([samples]);
+          var src = URL.createObjectURL(blob)
+          var tuna = {};
+          for(var i=0;i<document.forms.length;i++) {
+            var form = document.forms[i];
+            var formData = new FormData(form);
+            if (formData.get('enabled')) {
+              var config = {};
+              formData.forEach(function(value, key){
+                config[key] = value;
+              });
+              tuna[form.name] = config;
+            }
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -2,12 +2,13 @@ import os
 
 import environ
 
-
 env = environ.Env()
 env.read_env()
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
@@ -20,18 +21,17 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 # Application definition
 INSTALLED_APPS = [
-    'django.contrib.contenttypes',
-    'django.contrib.auth',
-    'django.contrib.sessions',
+    'django.contrib.staticfiles',
     'channels',
-    'alexa_browser_client'
+    'alexa_browser_client',
+    'demo',
 ]
 
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
 ]
 
-ROOT_URLCONF = 'alexa_browser_client.config.urls'
+ROOT_URLCONF = 'demo.config.urls'
 
 TEMPLATES = [
     {
@@ -102,3 +102,7 @@ ALEXA_BROWSER_CLIENT_AVS_CLIENT_SECRET = env.str(
 ALEXA_BROWSER_CLIENT_AVS_REFRESH_TOKEN = env.str(
     'ALEXA_BROWSER_CLIENT_AVS_REFRESH_TOKEN'
 )
+
+# static files
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+STATIC_URL = '/static/'

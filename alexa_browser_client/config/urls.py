@@ -17,10 +17,6 @@ oauth2_urlpatterns = [
 ]
 
 urlpatterns = [
-    path(
-        '',
-        views.AlexaBrowserClientView.as_view(),
-        name='alexa-browser-client',
-    ),
+    path('', views.AlexaBrowserClientView.as_view()),
     path('refreshtoken/', include(oauth2_urlpatterns)),
 ]
