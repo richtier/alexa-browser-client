@@ -1,4 +1,4 @@
-from avs_client.refreshtoken.helpers import AmazonOauth2RequestManager
+from alexa_client.refreshtoken.helpers import AmazonOauth2RequestManager
 import requests
 
 from django.conf import settings

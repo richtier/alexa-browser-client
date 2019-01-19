@@ -5,9 +5,13 @@ function AlexaBrowserClient(config) {
   var statusLabel = config.statusLabel;
   var websocketUrl = config.websocketUrl;
   var loginUrl = config.loginUrl;
-  var playAudioHandler = config.playAudioHandler || defaultPlayAudioHandler;
   var isPlaying = false;
   var directiveQueue = [];
+  var getTunaConfig = config.getTunaConfig || getDefaultTunaConfig;
+
+  function getDefaultTunaConfig() {
+    return {}
+  }
 
   function send(contents) {
     socket.readyState === WebSocket.OPEN && socket.send(contents);
@@ -29,16 +33,16 @@ function AlexaBrowserClient(config) {
     }
   }
 
-  function defaultPlayAudioHandler(samples) {
+  function playAudioHandler(samples) {
     var blob = new Blob([samples]);
     var src = URL.createObjectURL(blob)
     var play = async function() { 
-      var wadSound = new Wad({source: src});
+      var wadSound = new Wad({source: src, tuna: getTunaConfig()});
       isPlaying = true;
       await wadSound.play();
-      isPlaying = false;
     }
     play();
+    isPlaying = false;
   }
 
   function handleGetUserMediaSuccess(stream) {

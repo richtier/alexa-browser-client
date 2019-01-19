@@ -16,7 +16,7 @@ setup(
         'channels>=2.1.4,<3.0.0',
         'channels_redis>=2.1.1,<3.0.0',
         'Django>=2.1.0,<3.0.0',
-        'avs-client>=1.2.0,<2.0.0',
+        'alexa-client>=1.3.0,<2.0.0',
         'command-lifecycle>=4.1.0,<5.0.0',
         'requests>=2.20.0,<3.0.0',
     ],

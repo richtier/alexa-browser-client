@@ -1,7 +1,7 @@
 import json
 import threading
 
-from avs_client import AlexaVoiceServiceClient
+from alexa_client import AlexaClient
 from channels.generic.websocket import WebsocketConsumer
 from requests.exceptions import HTTPError
 
@@ -24,7 +24,7 @@ class AuthenticationFailed(AuthenticationError):
 
 class AlexaClientMixin:
 
-    alexa_client_class = AlexaVoiceServiceClient
+    alexa_client_class = AlexaClient
 
     def connect(self):
         super().connect()
