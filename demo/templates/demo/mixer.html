@@ -17,13 +17,15 @@
         margin-top: 30px;
         text-align: center;
       }
-      form {
+      fieldset, ul {
         background: #fefefe;
         border: 2px solid #fcfcfc;
         box-shadow: 0 1px 2px rgba(34, 25, 25, 0.4);
         display: inline-block;
-        margin: 0 2px 15px 10px;
         padding: 15px;
+      }
+      fieldset:disabled {
+        display: none;
       }
       form,
       input,
@@ -31,22 +33,18 @@
         font-size: 24px;
         line-height: 1.5em;
       }
-
-      form::before {
-        content: attr(name);
-        display: inline-block;
+      legend {
         font-size: 30px;
         font-weight: bold;
-        margin-bottom: 10px;
-        padding-bottom: 5px;
-        border-bottom: 1px solid #ccc;
-        width: 100%;
+        position: absolute;
+        top: 10px;
+        left: 10px;
       }
       fieldset {
-        border: 0;
-        display: inline-block;
-        padding: 0;
+        position: relative;
         width: 390px;
+        margin-right: 15px;
+        padding-top: 55px;
       }
       input::before,
       select::before,
@@ -72,211 +70,228 @@
         width: 100px;
       }
       section {
-        column-width: 400px;
-        column-gap: 15px;
-        max-width: 1300px;
-        margin: 50px auto;
+        max-width: 1600px;
+        margin-left: auto;
+        margin-right: auto;
+        display: flex;
+      }
+      #forms {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 1350px;
+      }
+      ul {
+        width: 200px;
+        list-style: none;
+        margin-right: 15px;
+        line-height: 24px;
+        margin-top: 0;
+      }
+      ul input {
+        -webkit-appearance: none;
+      }
+      ul input::before {
+        content: attr(form)
+      }
+      ul input:checked {
+        font-weight: bold;
       }
     </style>
   </head>
   <body>
     <h1 id="status-label"></h1>
     <section>
-      <form name="MoogFilter">
-        <label>
-          <span>Enabled</span>
-          <input type="checkbox" name="enabled" />
-        </label>
-        <fieldset name="fields" disabled>
-          <label>Cutoff<input type="range" name="cutoff" step="0.005" min="0.0001" max="1" value="0.065" /></label>
-          <label>Resonance<input type="range" name="resonance" step="0.2" max="4" value="3.5" /></label>
-          <label>
-            Buffer size
-            <select name="bufferSize">
-              <option value="256">256</option>
-              <option value="512">512</option>
-              <option value="2048">2048</option>
-              <option value="4096" selected>4096</option>
-              <option value="8192">8192</option>
-              <option value="16384">16384</option>
-            </select>
-          </label>
-        </fieldset>
-      </form>
+      <div id="controls">
+        <ul>
+          <li><input type="checkbox" form="MoogFilter"></li>
+          <li><input type="checkbox" form="PingPongDelay"></li>
+          <li><input type="checkbox" form="Chorus"></li>
+          <li><input type="checkbox" form="Delay"></li>
+          <li><input type="checkbox" form="Overdrive"></li>
+          <li><input type="checkbox" form="Filter"></li>
+          <li><input type="checkbox" form="Phaser"></li>
+          <li><input type="checkbox" form="WahWah"></li>
+          <li><input type="checkbox" form="Compressor"></li>
+          <li><input type="checkbox" form="Tremolo"></li>
+          <li><input type="checkbox" form="Bitcrusher"></li>
+          <li><input type="checkbox" form="Panner"></li>
+          <li><input type="checkbox" form="Gain"></li>
+        </ul>
+      </div>
+      <div id="forms">
+        <form id="MoogFilter">
+          <fieldset name="fields" disabled>
+            <input name="node" type="hidden" value="MoogFilter" />
+            <legend>Moog Filter</legend>
+            <label>Cutoff<input type="range" name="cutoff" step="0.005" min="0.0001" max="1" value="0.065" /></label>
+            <label>Resonance<input type="range" name="resonance" step="0.2" max="4" value="3.5" /></label>
+            <label>
+              Buffer size
+              <select name="bufferSize">
+                <option value="256">256</option>
+                <option value="512">512</option>
+                <option value="2048">2048</option>
+                <option value="4096" selected>4096</option>
+                <option value="8192">8192</option>
+                <option value="16384">16384</option>
+              </select>
+            </label>
+          </fieldset>
+        </form>
 
-      <form name="PingPongDelay">
-        <label>
-          <span>Enabled</span>
-          <input type="checkbox" name="enabled" />
-        </label>
-        <fieldset name="fields" disabled>
-          <label>Feedback<input type="range" name="feedback" step="0.05" max="1" value="0.3" /></label>
-          <label>Wet level<input type="range" name="wetLevel" step="0.05" max="1" value="0.5" /></label>
-          <label>Delay time left<input type="range" name="delayTimeLeft" step="50" min="1" max="10000" value="200" /></label>
-          <label>Delay time right<input type="range" name="delayTimeRight" step="50" min="1" max="10000" value="400" /></label>
-        </fieldset>
-      </form>
+        <form id="PingPongDelay">
+          <fieldset name="fields" disabled>
+            <input name="node" type="hidden" value="PingPongDelay" />
+            <legend>Ping Pong Delay</legend>
+            <label>Feedback<input type="range" name="feedback" step="0.05" max="1" value="0.3" /></label>
+            <label>Wet level<input type="range" name="wetLevel" step="0.05" max="1" value="0.5" /></label>
+            <label>Delay time left<input type="range" name="delayTimeLeft" step="50" min="1" max="10000" value="200" /></label>
+            <label>Delay time right<input type="range" name="delayTimeRight" step="50" min="1" max="10000" value="400" /></label>
+          </fieldset>
+        </form>
 
-      <form name="Chorus">
-        <label>
-          <span>Enabled</span>
-          <input type="checkbox" name="enabled" />
-        </label>
-        <fieldset name="fields" disabled>
-          <label>Feedback<input type="range" name="feedback" step="0.05" max="0.95" value="0.4" /></label>
-          <label>Delay<input type="range" name="delay" step="0.05" max="1" value="0.0045" /></label>
-          <label>Depth<input type="range" name="depth" step="0.05" max="1" value="0.7" /></label>
-          <label>Rate<input type="range" name="rate" step="0.25" max="8" value="1.5" /></label>
-        </fieldset>
-      </form>
+        <form id="Chorus">
+          <fieldset name="fields" disabled>
+            <input name="node" type="hidden" value="Chorus" />
+            <legend>Chorus</legend>
+            <label>Feedback<input type="range" name="feedback" step="0.05" max="0.95" value="0.4" /></label>
+            <label>Delay<input type="range" name="delay" step="0.05" max="1" value="0.0045" /></label>
+            <label>Depth<input type="range" name="depth" step="0.05" max="1" value="0.7" /></label>
+            <label>Rate<input type="range" name="rate" step="0.25" max="8" value="1.5" /></label>
+          </fieldset>
+        </form>
 
-      <form name="Delay">
-        <label>
-          <span>Enabled</span>
-          <input type="checkbox" name="enabled" />
-        </label>
-        <fieldset name="fields" disabled>
-          <label>Time<input type="range" name="delayTime" step="20" min="20" max="1000" value="100" /></label>
-          <label>Feedback<input type="range" name="feedback" step="0.05" max="0.9" value="0.45"/></label>
-          <label>Cutoff<input type="range" name="cutoff" step="20" min="20" max="20000" value="20000" /></label>
-          <label>Wet level<input type="range" name="wetLevel" step="0.05" max="1" value="0.05" /></label>
-          <label>Dry level<input type="range" name="dryLevel" step="0.05" max="1" value="1" /></label>
-        </fieldset>
-      </form>
+        <form id="Delay">
+          <fieldset name="fields" disabled>
+            <input name="node" type="hidden" value="Delay" />
+            <legend>Delay</legend>
+            <label>Time<input type="range" name="delayTime" step="20" min="20" max="1000" value="100" /></label>
+            <label>Feedback<input type="range" name="feedback" step="0.05" max="0.9" value="0.45"/></label>
+            <label>Cutoff<input type="range" name="cutoff" step="20" min="20" max="20000" value="20000" /></label>
+            <label>Wet level<input type="range" name="wetLevel" step="0.05" max="1" value="0.05" /></label>
+            <label>Dry level<input type="range" name="dryLevel" step="0.05" max="1" value="1" /></label>
+          </fieldset>
+        </form>
 
-      <form name="Overdrive">
-        <label>
-          <span>Enabled</span>
-          <input type="checkbox" name="enabled" />
-        </label>
-        <fieldset name="fields" disabled>
-          <label>Drive<input type="range" name="drive" step="0.05" max="1" value="1" /></label>
-          <label>Output Gain<input type="range" name="outputGain" step="0.05" max="1" value="1" /></label>
-          <label>Curve amount<input type="range" name="curveAmount" step="0.05" max="1" value="0.725" /></label>
-          <label>Algorithm index<input type="range" name="algorithmIndex" step="1" max="5" value="0" /></label>
-        </fieldset>
-      </form>
+        <form id="Overdrive">
+          <fieldset name="fields" disabled>
+            <input name="node" type="hidden" value="Overdrive" />
+            <legend>Overdrive</legend>
+            <label>Drive<input type="range" name="drive" step="0.05" max="1" value="1" /></label>
+            <label>Output Gain<input type="range" name="outputGain" step="0.05" max="1" value="1" /></label>
+            <label>Curve amount<input type="range" name="curveAmount" step="0.05" max="1" value="0.725" /></label>
+            <label>Algorithm index<input type="range" name="algorithmIndex" step="1" max="5" value="0" /></label>
+          </fieldset>
+        </form>
 
-      <form name="Filter">
-        <label>
-          <span>Enabled</span>
-          <input type="checkbox" name="enabled" />
-        </label>
-        <fieldset name="fields" disabled>
-          <label>
-            Filter
-            <select name="filterType">
-              <option value="lowpass">Lowpass</option>
-              <option value="highpass">Highpass</option>
-              <option value="bandpass">Bandpass</option>
-              <option value="lowshelf">Lowshelf</option>
-              <option value="highshelf">Highshelf</option>
-              <option value="peaking">Peaking</option>
-              <option value="notch">Notch</option>
-              <option value="allpass">Allpass</option>
-            </select>
-          </label>
-          <label>Frequency<input type="range" name="frequency" step="20" min="20" max="22050" value="800" /></label>
-          <label>Q<input type="range" name="Q" step="1" min=" 0.001" max="100" value="1" /></label>
-          <label>Gain<input type="range" name="gain" step="2" min="-40" max="40" value="0" /></label>
-        </fieldset>
-      </form>
+        <form id="Filter">
+          <fieldset name="fields" disabled>
+            <input name="node" type="hidden" value="Filter" />
+            <legend>Filter</legend>
+            <label>
+              Type
+              <select name="filterType">
+                <option value="lowpass">Lowpass</option>
+                <option value="highpass">Highpass</option>
+                <option value="bandpass">Bandpass</option>
+                <option value="lowshelf">Lowshelf</option>
+                <option value="highshelf">Highshelf</option>
+                <option value="peaking">Peaking</option>
+                <option value="notch">Notch</option>
+                <option value="allpass">Allpass</option>
+              </select>
+            </label>
+            <label>Frequency<input type="range" name="frequency" step="20" min="20" max="22050" value="800" /></label>
+            <label>Q<input type="range" name="Q" step="1" min=" 0.001" max="100" value="1" /></label>
+            <label>Gain<input type="range" name="gain" step="2" min="-40" max="40" value="0" /></label>
+          </fieldset>
+        </form>
 
-      <form name="Phaser">
-        <label>
-          <span>Enabled</span>
-          <input type="checkbox" name="enabled" />
-        </label>
-        <fieldset name="fields" disabled>
-          <label>Rate<input type="range" name="rate" step="0.1" max="8" value="0.1" /></label>
-          <label>Depth<input type="range" name="depth" step="0.05" max="1" value="0.6" /></label>
-          <label>Feedback<input type="range" name="feedback" step="0.05" max="1" value="0.7" /></label>
-          <label>Stereo phase<input type="range" name="stereoPhase" step="10" max="180" value="40" /></label>
-          <label title="Base modulation frequency">Base mod freq<input type="range" name="baseModulationFrequency" step="100" min="500" max="1500" value="700" /></label>
-        </fieldset>
-      </form>
+        <form id="Phaser">
+          <fieldset name="fields" disabled>
+            <input name="node" type="hidden" value="Phaser" />
+            <legend>Phaser</legend>
+            <label>Rate<input type="range" name="rate" step="0.1" max="8" value="0.1" /></label>
+            <label>Depth<input type="range" name="depth" step="0.05" max="1" value="0.6" /></label>
+            <label>Feedback<input type="range" name="feedback" step="0.05" max="1" value="0.7" /></label>
+            <label>Stereo phase<input type="range" name="stereoPhase" step="10" max="180" value="40" /></label>
+            <label title="Base modulation frequency">Base mod freq<input type="range" name="baseModulationFrequency" step="100" min="500" max="1500" value="700" /></label>
+          </fieldset>
+        </form>
 
-      <form name="WahWah">
-        <label>
-          <span>Enabled</span>
-          <input type="checkbox" name="enabled" />
-        </label>
-        <fieldset name="fields" disabled>
-          <label>Automode<input type="checkbox" name="automode" checked /></label>
-          <label>Base frequency<input type="range" name="baseFrequency" step="0.1" max="1" value="0.5" /></label>
-          <label title="Excursion octaves">Excur octaves<input type="range" name="excursionOctaves" step="1" min="1" max="6" value="2" /></label>
-          <label>Sweep<input type="range" name="sweep" step="0.1" max="1" value="0.2" /></label>
-          <label>Resonance<input type="range" name="resonance" step="10" min="1" max="100" value="10" /></label>
-          <label>Sensitivity<input type="range" name="sensitivity" step="0.5" min="-1" max="1" value="0.5" /></label>
-        </fieldset>
-      </form>
+        <form id="WahWah">
+          <fieldset name="fields" disabled>
+            <input name="node" type="hidden" value="WahWah" />
+            <legend>Wah Wah</legend>
+            <label>Automode<input type="checkbox" name="automode" checked /></label>
+            <label>Base frequency<input type="range" name="baseFrequency" step="0.1" max="1" value="0.5" /></label>
+            <label title="Excursion octaves">Excur octaves<input type="range" name="excursionOctaves" step="1" min="1" max="6" value="2" /></label>
+            <label>Sweep<input type="range" name="sweep" step="0.1" max="1" value="0.2" /></label>
+            <label>Resonance<input type="range" name="resonance" step="10" min="1" max="100" value="10" /></label>
+            <label>Sensitivity<input type="range" name="sensitivity" step="0.5" min="-1" max="1" value="0.5" /></label>
+          </fieldset>
+        </form>
 
-      <form name="Compressor">
-        <label>
-          <span>Enabled</span>
-          <input type="checkbox" name="enabled" />
-        </label>
-        <fieldset name="fields" disabled>
-          <label>Threshold<input type="range" name="threshold" step="5" min="-60" max="0" value="-20" /></label>
-          <label>Release<input type="range" name="release" step="10" min="10" max="2000" value="250" /></label>
-          <label>Makeup gain<input type="range" name="makeupGain" step="1" min="1" max="100" value="1" /></label>
-          <label>Attack<input type="range" name="attack" step="1" max="1000" value="1" /></label>
-          <label>Ratio<input type="range" name="ratio" step="1" min="1" max="50" value="4" /></label>
-          <label>Knee<input type="range" name="knee" step="5" max="40" value="5" /></label>
-          <label>Automakeup<input type="checkbox" name="automakeup" /></label>
-        </fieldset>
-      </form>
+        <form id="Compressor">
+          <fieldset name="fields" disabled>
+            <input name="node" type="hidden" value="Compressor" />
+            <legend>Compressor</legend>
+            <label>Threshold<input type="range" name="threshold" step="5" min="-60" max="0" value="-20" /></label>
+            <label>Release<input type="range" name="release" step="10" min="10" max="2000" value="250" /></label>
+            <label>Makeup gain<input type="range" name="makeupGain" step="1" min="1" max="100" value="1" /></label>
+            <label>Attack<input type="range" name="attack" step="1" max="1000" value="1" /></label>
+            <label>Ratio<input type="range" name="ratio" step="1" min="1" max="50" value="4" /></label>
+            <label>Knee<input type="range" name="knee" step="5" max="40" value="5" /></label>
+            <label>Automakeup<input type="checkbox" name="automakeup" /></label>
+          </fieldset>
+        </form>
 
-      <form name="Tremolo">
-        <label>
-          <span>Enabled</span>
-          <input type="checkbox" name="enabled" />
-        </label>
-        <fieldset name="fields" disabled>
-          <label>Intensity<input type="range" name="intensity" step="0.05" max="1" value="0.3" /></label>
-          <label>Stereo phase<input type="range" name="stereoPhase" step="10" max="180" value="0" /></label>
-          <label>Rate<input type="range" name="rate" step="0.1" min="0.1" max="11" value="5" /></label>
-        </fieldset>
-      </form>
+        <form id="Tremolo">
+          <fieldset name="fields" disabled>
+            <input name="node" type="hidden" value="Tremolo" />
+            <legend>Tremolo</legend>
+            <label>Intensity<input type="range" name="intensity" step="0.05" max="1" value="0.3" /></label>
+            <label>Stereo phase<input type="range" name="stereoPhase" step="10" max="180" value="0" /></label>
+            <label>Rate<input type="range" name="rate" step="0.1" min="0.1" max="11" value="5" /></label>
+          </fieldset>
+        </form>
 
-      <form name="Bitcrusher">
-        <label>
-          <span>Enabled</span>
-          <input type="checkbox" name="enabled" />
-        </label>
-        <fieldset name="fields" disabled>
-          <label>Bits<input type="range" name="bits" step="1" min="1" max="16" value="4" /></label>
-          <label>Normfreq<input type="range" name="normfreq" step="0.0025" min="0.0001" max="1" value="0.1" /></label>
-          <label>
-            Buffer size
-            <select name="bufferSize">
-              <option value="256">256</option>
-              <option value="512">512</option>
-              <option value="2048">2048</option>
-              <option value="4096" selected>4096</option>
-              <option value="8192">8192</option>
-              <option value="16384">16384</option>
-            </select>
-          </label>
-        </fieldset>
-      </form>
+        <form id="Bitcrusher">
+          <fieldset name="fields" disabled>
+            <input name="node" type="hidden" value="Bitcrusher" />
+            <legend>Bitcrusher</legend>
+            <label>Bits<input type="range" name="bits" step="1" min="1" max="16" value="4" /></label>
+            <label>Normfreq<input type="range" name="normfreq" step="0.0025" min="0.0001" max="1" value="0.1" /></label>
+            <label>
+              Buffer size
+              <select name="bufferSize">
+                <option value="256">256</option>
+                <option value="512">512</option>
+                <option value="2048">2048</option>
+                <option value="4096" selected>4096</option>
+                <option value="8192">8192</option>
+                <option value="16384">16384</option>
+              </select>
+            </label>
+          </fieldset>
+        </form>
 
-      <form name="Panner">
-        <label>
-          <span>Enabled</span>
-          <input type="checkbox" name="enabled" />
-        </label>
-        <fieldset name="fields" disabled>
-          <label>Pan<input type="range" name="pan" step="0.1" min="-1" max="1" value="0" /></label>
-        </fieldset>
-      </form>
+        <form id="Panner">
+          <fieldset name="fields" disabled>
+            <input name="node" type="hidden" value="Panner" />
+            <legend>Panner</legend>
+            <label>Pan<input type="range" name="pan" step="0.1" min="-1" max="1" value="0" /></label>
+          </fieldset>
+        </form>
 
-      <form name="Gain">
-        <label>Enabled<input type="checkbox" name="enabled" /></label>
-        <fieldset name="fields" disabled>
-          <label>Gain<input type="number" name="gain" min="1" value="1" /></label>
-        </fieldset>
-      </form>
+        <form id="Gain">
+          <fieldset name="fields" disabled>
+            <input name="node" type="hidden" value="Gain" />
+            <legend>Gain</legend>
+            <label>Gain<input type="number" name="gain" min="1" value="1" /></label>
+          </fieldset>
+        </form>
+      </div>
     </section>
 
     <script type="text/javascript">
@@ -295,7 +310,7 @@
         rangeElements[i].addEventListener('change', handleRangeInputChange)
       }
 
-      var nodeEnableButtons = document.querySelectorAll('input[name=enabled]');
+      var nodeEnableButtons = document.querySelectorAll('ul input');
       for (i = 0; i < nodeEnableButtons.length; i++) { 
         nodeEnableButtons[i].addEventListener('change', handleNodeButtonChange)
       }
