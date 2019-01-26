@@ -305,31 +305,48 @@
       document.querySelectorAll('input[type=range]').forEach(function(element) {
         element.addEventListener('input', function(event) {
           event.target.setAttribute('value', event.target.value);
-        })
-      })
+        });
+      });
 
-      AlexaBrowserClient({
+      function coerce(name, value) {
+        if (name == 'bypass') {
+          return value === 'true';
+        } else {
+          return Number(value);
+        }
+      }
+
+      var abc = AlexaBrowserClient({
         websocketUrl: '{{ websocket_url }}',
         loginUrl: '{% url "refreshtoken" %}',
         statusLabel: document.querySelector('h1'),
-        getTunaConfig: function() {
+        getWadConfig: function(wadConfig) {
           var tunaConfig = {};
           for (var i=0;i<document.forms.length;i++) {
             var formData = new FormData(document.forms[i]);
-            var config = {};
+            var nodeConfig = {};
             formData.forEach(function(value, key){
-              if (key == 'bypass') {
-                value = value === 'true';
-              } else {
-                value = Number(value);
-              }
-              config[key] = value
+              nodeConfig[key] = coerce(key, value);
             });
-            tunaConfig[document.forms[i].id] = config;
+            tunaConfig[document.forms[i].id] = nodeConfig;
           }
-          return tunaConfig;
+          wadConfig.tuna = tunaConfig;
+          return wadConfig;
         }
       });
+
+      document.querySelectorAll('input,select,checkbox').forEach(function(element) {
+        element.addEventListener('change', function(event) {
+          if (abc.wadSound && abc.wadSound.nodes){
+            abc.wadSound.nodes.forEach(function(node) {
+              if (node.name == event.target.form.id) {
+                node[event.target.name] = coerce(event.target.name, event.target.value);
+              }
+            });
+          }
+        });
+      });
+
     </script>
   </body>
 </html>
