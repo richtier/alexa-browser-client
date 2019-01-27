@@ -33,14 +33,29 @@ function AlexaBrowserClient(props) {
     }
   }
 
+  function getDuration(source) {
+    return new Promise(function(resolve) {
+      var audio = new Audio();
+      audio.onloadedmetadata = function() {
+        resolve(audio.duration);
+      }
+      audio.src = source;
+    });
+  }
+
   function playAudioHandler(samples) {
     var blob = new Blob([samples]);
     var source = URL.createObjectURL(blob)
-    this.wadSound = new Wad(getWadConfig({source: source}));
-    isPlaying = true;
-    this.wadSound.play().then(function(){
-      isPlaying = false;
-    });
+    getDuration(source)
+      .then(function(length) {
+        this.wadSound = new Wad(getWadConfig({source: source}));
+        wadSound.defaultEnv.hold = length;
+        isPlaying = true;
+        return this.wadSound.play({wait: 0})
+      })
+      .then(function(){
+        isPlaying = false;
+      });
   }
 
   function handleGetUserMediaSuccess(stream) {
