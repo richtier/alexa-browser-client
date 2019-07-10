@@ -39,10 +39,6 @@ class AlexaClientMixin:
         except AuthenticationError:
             self.close(code=3000)
 
-    def receive(self, text_data=None, bytes_data=None):
-        super().receive(text_data=text_data, bytes_data=bytes_data)
-        self.alexa_client.conditional_ping()
-
     def handle_alexa_connect(self):
         if not self.refresh_token:
             raise MissingRefreshToken()
@@ -57,6 +53,10 @@ class AlexaClientMixin:
         if not self.scope['session']:
             return None
         return self.scope['session'].get(constants.SESSION_KEY_REFRESH_TOKEN)
+
+    def disconnect(self, *args, **kwargs):
+        self.alexa_client.ping_manager.cancel()
+        return super().disconnect(*args, **kwargs)
 
 
 class LifecycleMixin:

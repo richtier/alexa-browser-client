@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 
 from alexa_browser_client.config.urls import urlpatterns
 

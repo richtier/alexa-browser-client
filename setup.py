@@ -19,6 +19,8 @@ setup(
         'alexa-client>=1.3.0,<2.0.0',
         'command-lifecycle>=4.1.0,<5.0.0',
         'requests>=2.20.0,<3.0.0',
+         # ApplicationCommunicator.instance was removed in newer asgiref
+        'asgiref~=2.2',
     ],
     extras_require={
         'test': [
