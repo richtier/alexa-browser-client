@@ -20,9 +20,7 @@ def pytest_configure():
             },
         },
         INSTALLED_APPS=[
-            'django.contrib.contenttypes',
-            'django.contrib.auth',
-            'django.contrib.sessions',
+            'django.contrib.staticfiles',
             'channels',
             'alexa_browser_client',
         ],
@@ -46,7 +44,8 @@ def pytest_configure():
         SESSION_ENGINE='django.contrib.sessions.backends.cache',
         MIDDLEWARE=[
             'django.contrib.sessions.middleware.SessionMiddleware',
-        ]
+        ],
+        STATIC_URL='/static/',
     )
 
 

@@ -1,0 +1,375 @@
+{% load static from staticfiles %}
+<html>
+  <head>
+    <title>Alexa Browser Client</title>
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <script src="{% static 'main.js' %}"></script>
+    <style>
+      body {
+        font-family: helvetica, arial;
+        background: rgba(241,231,103,1);
+        color: #444;
+        max-width: 1600px;
+        margin: 30px auto;
+      }
+      h1 {
+        font-size: 60px;
+        min-height: 70px;
+        text-align: center;
+      }
+      section {
+        display: none;
+        width: 100%;
+      }
+      button {
+        cursor: pointer;
+        font-size: 19px;
+        background-color: #006ccc;
+        color: #fff;
+        padding: 10px 30px;
+        line-height: 30px;
+        border: none;
+        border-radius: 2px;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+      }
+      aside,
+      main > form > fieldset {
+        background: #fefefe;
+        border: 2px solid #fcfcfc;
+        box-shadow: 0 1px 6px rgb(113, 82, 33);
+        padding: 15px;
+        margin-right: 15px;
+      }
+      form,
+      input,
+      select,
+      aside > label {
+        font-size: 24px;
+        line-height: 1.5em;
+        color: #444;
+      }
+      aside {
+        width: 200px;
+        float: left;
+      }
+      aside > input {
+        display: block;
+        -webkit-appearance: none;
+      }
+      aside > input:before {
+        content: attr(form);
+        cursor: pointer;
+      }
+      aside > input:checked {
+        font-weight: bold;
+      }
+      main {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 1350px;
+        position: relative;
+      }
+      main:before {
+        content: '↜ Add some audio filters';
+        position: absolute;
+        top: 60px;
+        left: 5px;
+        font-size: 38px;
+      }
+      main > form {
+        z-index: 1;
+        position: relative;
+      }
+      main > form > input[name=bypass] {
+        -webkit-appearance: searchfield-cancel-button;
+        cursor: pointer;
+        position: absolute;
+        right: 40px;
+        top: 20px;
+      }
+      main > form > input[name=bypass]:checked,
+      main > form > input[name=bypass]:checked + fieldset {
+        display: none;
+      }
+      main > form > fieldset {
+        width: 390px;
+      }
+      main > form > fieldset:before {
+        content: attr(form);
+      }
+      main > form > fieldset > h3 {
+        margin-top: 0;
+        text-align: center;
+      }
+      main > form > fieldset > label {
+        position: relative;
+        display: block;
+      }
+      main > form > fieldset > label > input,
+      main > form > fieldset > label > select {
+        position: absolute;
+        left: 170px;
+      }
+      main > form > fieldset > label > input[type=range]::after {
+        content: attr(value);
+        position: absolute;
+        right: -80px;
+      }
+      main > form > fieldset > label > input[type=number] {
+        width: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <button>Begin demo</button>
+    <section>
+      <h1>Loading</h1>
+      <aside>
+        <input type="radio" name="bypass" value="false" form="MoogFilter" />
+        <input type="radio" name="bypass" value="false" form="PingPongDelay" />
+        <input type="radio" name="bypass" value="false" form="Chorus" />
+        <input type="radio" name="bypass" value="false" form="Delay" />
+        <input type="radio" name="bypass" value="false" form="Overdrive" />
+        <input type="radio" name="bypass" value="false" form="Filter" />
+        <input type="radio" name="bypass" value="false" form="Phaser" />
+        <input type="radio" name="bypass" value="false" form="WahWah" />
+        <input type="radio" name="bypass" value="false" form="Compressor" />
+        <input type="radio" name="bypass" value="false" form="Tremolo" />
+        <input type="radio" name="bypass" value="false" form="Bitcrusher" />
+        <input type="radio" name="bypass" value="false" form="Panner" />
+        <input type="radio" name="bypass" value="false" form="Gain" />
+      </aside>
+      <main>
+        <form id="MoogFilter">
+          <input type="radio" name="bypass" value="true" checked>
+          <fieldset>
+            <h3>Moog Filter</h3>
+            <label>Cutoff<input type="range" name="cutoff" step="0.005" min="0.0001" max="1" value="0.065" /></label>
+            <label>Resonance<input type="range" name="resonance" step="0.2" max="4" value="3.5" /></label>
+            <label>
+              Buffer size
+              <select name="bufferSize">
+                <option value="256">256</option>
+                <option value="512">512</option>
+                <option value="2048">2048</option>
+                <option value="4096" selected>4096</option>
+                <option value="8192">8192</option>
+                <option value="16384">16384</option>
+              </select>
+            </label>
+          </fieldset>
+        </form>
+
+        <form id="PingPongDelay">
+          <input type="radio" name="bypass" value="true" checked>
+          <fieldset>
+            <h3>Ping Pong Delay</h3>
+            <label>Feedback<input type="range" name="feedback" step="0.05" max="1" value="0.3" /></label>
+            <label>Wet level<input type="range" name="wetLevel" step="0.05" max="1" value="0.5" /></label>
+            <label>Delay time left<input type="range" name="delayTimeLeft" step="50" max="10000" value="200" /></label>
+            <label>Delay time right<input type="range" name="delayTimeRight" step="50" max="10000" value="400" /></label>
+          </fieldset>
+        </form>
+
+        <form id="Chorus">
+          <input type="radio" name="bypass" value="true" checked>
+          <fieldset>
+            <h3>Chorus</h3>
+            <label>Feedback<input type="range" name="feedback" step="0.05" max="0.95" value="0.4" /></label>
+            <label>Delay<input type="range" name="delay" step="0.05" max="1" value="0.0045" /></label>
+            <label>Depth<input type="range" name="depth" step="0.05" max="1" value="0.7" /></label>
+            <label>Rate<input type="range" name="rate" step="0.25" max="8" value="1.5" /></label>
+          </fieldset>
+        </form>
+
+        <form id="Delay">
+          <input type="radio" name="bypass" value="true" checked>
+          <fieldset>
+            <h3>Delay</h3>
+            <label>Time<input type="range" name="delayTime" step="20" min="20" max="1000" value="100" /></label>
+            <label>Feedback<input type="range" name="feedback" step="0.05" max="0.9" value="0.45"/></label>
+            <label>Cutoff<input type="range" name="cutoff" step="20" min="20" max="20000" value="20000" /></label>
+            <label>Wet level<input type="range" name="wetLevel" step="0.05" max="1" value="0.05" /></label>
+            <label>Dry level<input type="range" name="dryLevel" step="0.05" max="1" value="1" /></label>
+          </fieldset>
+        </form>
+
+        <form id="Overdrive">
+          <input type="radio" name="bypass" value="true" checked>
+          <fieldset>
+            <h3>Overdrive</h3>
+            <label>Drive<input type="range" name="drive" step="0.05" max="1" value="1" /></label>
+            <label>Output Gain<input type="range" name="outputGain" step="0.05" max="1" value="1" /></label>
+            <label>Curve amount<input type="range" name="curveAmount" step="0.05" max="1" value="0.725" /></label>
+            <label>Algorithm index<input type="range" name="algorithmIndex" step="1" max="5" value="0" /></label>
+          </fieldset>
+        </form>
+
+        <form id="Filter">
+          <input type="radio" name="bypass" value="true" checked>
+          <fieldset>
+            <h3>Filter</h3>
+            <label>
+              Type
+              <select name="filterType">
+                <option value="lowpass">Lowpass</option>
+                <option value="highpass">Highpass</option>
+                <option value="bandpass">Bandpass</option>
+                <option value="lowshelf">Lowshelf</option>
+                <option value="highshelf">Highshelf</option>
+                <option value="peaking">Peaking</option>
+                <option value="notch">Notch</option>
+                <option value="allpass">Allpass</option>
+              </select>
+            </label>
+            <label>Frequency<input type="range" name="frequency" step="20" min="20" max="22050" value="800" /></label>
+            <label>Q<input type="range" name="Q" step="1" min=" 0.001" max="100" value="1" /></label>
+            <label>Gain<input type="range" name="gain" step="2" min="-40" max="40" value="0" /></label>
+          </fieldset>
+        </form>
+
+        <form id="Phaser">
+          <input type="radio" name="bypass" value="true" checked>
+          <fieldset>
+            <h3>Phaser</h3>
+            <label>Rate<input type="range" name="rate" step="0.1" max="8" value="0.1" /></label>
+            <label>Depth<input type="range" name="depth" step="0.05" max="1" value="0.6" /></label>
+            <label>Feedback<input type="range" name="feedback" step="0.05" max="1" value="0.7" /></label>
+            <label>Stereo phase<input type="range" name="stereoPhase" step="10" max="180" value="40" /></label>
+            <label title="Base modulation frequency">Base mod freq<input type="range" name="baseModulationFrequency" step="100" min="500" max="1500" value="700" /></label>
+          </fieldset>
+        </form>
+
+        <form id="WahWah">
+          <input type="radio" name="bypass" value="true" checked>
+          <fieldset>
+            <h3>Wah Wah</h3>
+            <label>Automode<input type="checkbox" name="automode" checked /></label>
+            <label>Base frequency<input type="range" name="baseFrequency" step="0.1" max="1" value="0.5" /></label>
+            <label title="Excursion octaves">Excur octaves<input type="range" name="excursionOctaves" step="1" max="6" value="2" /></label>
+            <label>Sweep<input type="range" name="sweep" step="0.1" max="1" value="0.2" /></label>
+            <label>Resonance<input type="range" name="resonance" step="10" max="100" value="10" /></label>
+            <label>Sensitivity<input type="range" name="sensitivity" step="0.5" min="-1" max="1" value="0.5" /></label>
+          </fieldset>
+        </form>
+
+        <form id="Compressor">
+          <input type="radio" name="bypass" value="true" checked>
+          <fieldset>
+            <h3>Compressor</h3>
+            <label>Threshold<input type="range" name="threshold" step="5" min="-60" max="0" value="-20" /></label>
+            <label>Release<input type="range" name="release" step="10" min="10" max="2000" value="250" /></label>
+            <label>Makeup gain<input type="range" name="makeupGain" step="1" max="100" value="1" /></label>
+            <label>Attack<input type="range" name="attack" step="1" max="1000" value="1" /></label>
+            <label>Ratio<input type="range" name="ratio" step="1" max="50" value="4" /></label>
+            <label>Knee<input type="range" name="knee" step="5" max="40" value="5" /></label>
+            <label>Automakeup<input type="checkbox" name="automakeup" /></label>
+          </fieldset>
+        </form>
+
+        <form id="Tremolo">
+          <input type="radio" name="bypass" value="true" checked>
+          <fieldset>
+            <h3>Tremolo</h3>
+            <label>Intensity<input type="range" name="intensity" step="0.05" max="1" value="0.3" /></label>
+            <label>Stereo phase<input type="range" name="stereoPhase" step="10" max="180" value="0" /></label>
+            <label>Rate<input type="range" name="rate" step="0.1" min="0.1" max="11" value="5" /></label>
+          </fieldset>
+        </form>
+
+        <form id="Bitcrusher">
+          <input type="radio" name="bypass" value="true" checked>
+          <fieldset>
+            <h3>Bitcrusher</h3>
+            <label>Bits<input type="range" name="bits" step="1" max="16" value="4" /></label>
+            <label>Normfreq<input type="range" name="normfreq" step="0.0025" min="0.0001" max="1" value="0.1" /></label>
+            <label>
+              Buffer size
+              <select name="bufferSize">
+                <option value="256">256</option>
+                <option value="512">512</option>
+                <option value="2048">2048</option>
+                <option value="4096" selected>4096</option>
+                <option value="8192">8192</option>
+                <option value="16384">16384</option>
+              </select>
+            </label>
+          </fieldset>
+        </form>
+
+        <form id="Panner">
+          <input type="radio" name="bypass" value="true" checked>
+          <fieldset>
+            <h3>Panner</h3>
+            <label>Pan<input type="range" name="pan" step="0.1" min="-1" max="1" value="0" /></label>
+          </fieldset>
+        </form>
+
+        <form id="Gain">
+          <input type="radio" name="bypass" value="true" checked>
+          <fieldset>
+            <h3>Gain</h3>
+            <label>Gain<input type="number" name="gain" value="1" /></label>
+          </fieldset>
+        </form>
+      </main>
+    </section>
+    <script type="text/javascript">
+      // An <input> value attribute sets the default value for the input,
+      // not the live value. To facilitate the css in input[type=range]::after
+      // the value attribute is updated with the live value
+      document.querySelectorAll('input[type=range]').forEach(function(element) {
+        element.addEventListener('input', function(event) {
+          event.target.setAttribute('value', event.target.value);
+        });
+      });
+
+      function coerce(name, value) {
+        if (name == 'bypass') {
+          return value === 'true';
+        } else if (isNaN(value)) {
+          return value;
+        } else {
+          return Number(value);
+        }
+      }
+
+      document.querySelector('button').addEventListener('click', function(event) {
+        event.target.remove();
+        document.querySelector('section').style.display = 'inherit';
+        var abc = AlexaBrowserClient({
+          websocketUrl: '{{ websocket_url }}',
+          loginUrl: '{% url "refreshtoken" %}',
+          statusLabel: document.querySelector('h1'),
+          getWadConfig: function(wadConfig) {
+            var tunaConfig = {};
+            for (var i=0;i<document.forms.length;i++) {
+              var formData = new FormData(document.forms[i]);
+              var nodeConfig = {};
+              formData.forEach(function(value, key){
+                nodeConfig[key] = coerce(key, value);
+              });
+              tunaConfig[document.forms[i].id] = nodeConfig;
+            }
+            wadConfig.tuna = tunaConfig;
+            return wadConfig;
+          }
+        });
+
+        document.querySelectorAll('input,select,checkbox').forEach(function(element) {
+          element.addEventListener('change', function(event) {
+            if (abc.wadSound && abc.wadSound.nodes){
+              abc.wadSound.nodes.forEach(function(node) {
+                if (node.name == event.target.form.id) {
+                  node[event.target.name] = coerce(event.target.name, event.target.value);
+                }
+              });
+            }
+          });
+        });
+      }) 
+    </script>
+  </body>
+</html>

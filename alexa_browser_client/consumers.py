@@ -1,7 +1,7 @@
 import json
 import threading
 
-from avs_client import AlexaVoiceServiceClient
+from alexa_client import AlexaClient
 from channels.generic.websocket import WebsocketConsumer
 from requests.exceptions import HTTPError
 
@@ -24,7 +24,7 @@ class AuthenticationFailed(AuthenticationError):
 
 class AlexaClientMixin:
 
-    alexa_client_class = AlexaVoiceServiceClient
+    alexa_client_class = AlexaClient
 
     def connect(self):
         super().connect()
@@ -38,10 +38,6 @@ class AlexaClientMixin:
             self.handle_alexa_connect()
         except AuthenticationError:
             self.close(code=3000)
-
-    def receive(self, text_data=None, bytes_data=None):
-        super().receive(text_data=text_data, bytes_data=bytes_data)
-        self.alexa_client.conditional_ping()
 
     def handle_alexa_connect(self):
         if not self.refresh_token:
@@ -57,6 +53,10 @@ class AlexaClientMixin:
         if not self.scope['session']:
             return None
         return self.scope['session'].get(constants.SESSION_KEY_REFRESH_TOKEN)
+
+    def disconnect(self, *args, **kwargs):
+        self.alexa_client.ping_manager.cancel()
+        return super().disconnect(*args, **kwargs)
 
 
 class LifecycleMixin:

@@ -26,12 +26,11 @@ First follow these steps:
 ```sh
 $ git clone git@github.com:richtier/alexa-browser-client.git
 $ cd alexa-browser-client
-$ virtualenv .venv -p python3.6
-$ source .venv/bin/activate
-$ make test_requirements
+$ virtualenv .venv -p python3.6 && source .venv/bin/activate && make test_requirements
 ```
 4. [Compile snowboy](#snowboy)
 5. `$ make demo`
+6. Go to http://localhost:8000 for basic demo, or http://localhost:8000/mixer/ to play with the response audio
 
 ## Installation
 
@@ -43,9 +42,7 @@ Make sure your settings `INSTALLED_APPS` contains at least these entries:
 
 ```
 INSTALLED_APPS = [
-    'django.contrib.contenttypes',
-    'django.contrib.auth',
-    'django.contrib.sessions',
+    'django.contrib.staticfiles',
     'channels',
     'alexa_browser_client',
 ]

@@ -1,6 +1,6 @@
 from unittest.mock import call, patch
 
-from avs_client.refreshtoken.helpers import AmazonOauth2RequestManager
+from alexa_client.refreshtoken.helpers import AmazonOauth2RequestManager
 import pytest
 
 from django.urls import reverse
