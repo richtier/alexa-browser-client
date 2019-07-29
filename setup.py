@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='alexa_browser_client',
-    version='3.3.0',
+    version='3.3.1',
     url='https://github.com/richtier/alexa-browser-client',
     license='MIT',
     author='Richard Tier',
@@ -20,7 +20,7 @@ setup(
         'command-lifecycle>=4.1.0,<5.0.0',
         'requests>=2.20.0,<3.0.0',
          # ApplicationCommunicator.instance was removed in newer asgiref
-        'asgiref~=2.2',
+        'asgiref==2.2',
     ],
     extras_require={
         'test': [
