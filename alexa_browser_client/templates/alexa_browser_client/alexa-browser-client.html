@@ -7,12 +7,18 @@
   </head>
   <body>
     <h1 id="status-label" style="font-size: 60px;"></h1>
+    <button>Begin</button>
     <script type="text/javascript">
-      AlexaBrowserClient({
-        loginUrl: '{% url "refreshtoken" %}',
-        websocketUrl: '{{ websocket_url }}',
-        statusLabel: document.getElementById('status-label'),
+      document.querySelector('button').addEventListener('click', function(event) {
+        event.target.remove();
+
+        AlexaBrowserClient({
+          loginUrl: '{% url "refreshtoken" %}',
+          websocketUrl: '{{ websocket_url }}',
+          statusLabel: document.getElementById('status-label')
+        });
       });
+
     </script>
   </body>
 </html>

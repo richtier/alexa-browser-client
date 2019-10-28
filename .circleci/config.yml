@@ -25,8 +25,8 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            make lint
-            make test
+            flake8
+            pytest
       - run:
           name: report coverage
           command: |

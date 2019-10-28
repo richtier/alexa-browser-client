@@ -1,19 +1,3 @@
-lint:
-	flake8 --exclude=.venv,venv,snowboy,build
-
-
-test:
-	pytest $1 \
-		--ignore=venv \
-		--ignore=.venv \
-		--ignore=build \
-		--cov=./ \
-		--cov-config=.coveragerc \
-		--capture=no \
-		--last-failed \
-		--verbose
-
-
 build:
 	rm -rf build
 	rm -rf dist
@@ -38,4 +22,4 @@ demo:
 	python3 ./demo/manage.py runserver
 
 
-.PHONY: lint test demo publish_test publish build
+.PHONY: demo publish_test publish build
