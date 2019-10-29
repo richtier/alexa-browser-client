@@ -1,12 +1,11 @@
 from unittest import mock
 
-from alexa_client import AlexaClient
 from alexa_client.alexa_client.helpers import Directive, SpeakDirective
 from channels.testing import WebsocketCommunicator
 from requests.exceptions import HTTPError
 import pytest
 
-from alexa_browser_client import consumers, constants
+from alexa_browser_client import consumers, constants, helpers
 
 
 MESSAGE_CONNECTING = {'type': constants.CONNECTING}
@@ -15,11 +14,75 @@ MESSAGE_WAKEWORD = {'type': constants.EXPECTING_WAKEWORD}
 MESSAGE_COMMAND = {'type': constants.EXPECTING_COMMAND}
 
 
+class AlexaClientCommandNotUnderstood(mock.Mock):
+    # consumer receives audio that AVS does not understand
+    send_audio_file = mock.Mock(return_value=[])
+
+
+class AlexaClientPlayResponse(mock.Mock):
+    send_audio_file = mock.Mock(return_value=[
+        SpeakDirective(
+            audio_attachment=b'22222222',
+            content={
+                'directive': {},
+                'header': {'name': 'Play', 'dialogRequestId': '123'}
+            }
+        )
+    ])
+
+
+class AlexaClientExpectSpeechResponse(mock.Mock):
+    send_audio_file = mock.Mock(return_value=[
+        Directive({
+            'directive': {},
+            'header': {'name': 'ExpectSpeech', 'dialogRequestId': '123'}
+        })
+    ])
+
+
+class AlexaClientSpeakResponse(mock.Mock):
+    send_audio_file = mock.Mock(return_value=[
+        SpeakDirective(
+            audio_attachment=b'22222222',
+            content={
+                'directive': {},
+                'header': {'name': 'Speak', 'dialogRequestId': '123'}
+            }
+        )
+    ])
+
+
+class ImmediateCommandLifecycle(helpers.AudioLifecycle):
+
+    def get_uttered_wakeword_name(self):
+        yield 'TEST'
+        yield None
+
+
 @pytest.fixture(autouse=True)
-def mock_client_connect():
-    stub = mock.patch.object(AlexaClient, 'connect')
-    yield stub.start()
-    stub.stop()
+def alexa_client():
+    patch = mock.patch('alexa_client.AlexaClient')
+    yield patch.start()
+    patch.stop()
+
+
+@pytest.fixture
+def audio_lifecycle():
+    patch = mock.patch(
+        'alexa_browser_client.consumers.AlexaConsumer.audio_lifecycle_class'
+    )
+    yield patch.start()
+    patch.stop()
+
+
+# @pytest.fixture
+# def send():
+#     patch = mock.patch.object(
+#         consumers.AlexaConsumer, 'send',
+#         # wraps=consumers.AlexaConsumer.send
+#     )
+#     yield patch.start()
+#     patch.stop()
 
 
 @pytest.mark.asyncio
@@ -36,10 +99,9 @@ async def test_connect_rejected_no_refresh_token():
 
 
 @pytest.mark.asyncio
-async def test_connect_rejected_invalid_refresh_token(
-    mock_client_connect
-):
-    mock_client_connect.side_effect = HTTPError()
+async def test_connect_rejected_invalid_refresh_token(alexa_client):
+
+    alexa_client.connect.side_effect = HTTPError()
 
     communicator = WebsocketCommunicator(consumers.AlexaConsumer, '/')
     communicator.scope['session'] = {constants.SESSION_KEY_REFRESH_TOKEN: '1'}
@@ -54,21 +116,12 @@ async def test_connect_rejected_invalid_refresh_token(
 
 @pytest.mark.asyncio
 async def test_connected_expecting_wakeword():
-    communicator = WebsocketCommunicator(consumers.AlexaConsumer, '/')
-    communicator.scope['session'] = {constants.SESSION_KEY_REFRESH_TOKEN: '1'}
 
-    connected, subprotocol = await communicator.connect()
+    class TestConsumer(consumers.AlexaConsumer):
+        audio_lifecycle_class = ImmediateCommandLifecycle
+        alexa_client_class = mock.Mock
 
-    assert connected
-    assert await communicator.receive_json_from() == MESSAGE_CONNECTING
-    assert await communicator.receive_json_from() == MESSAGE_WAKEWORD
-
-    await communicator.disconnect()
-
-
-@pytest.mark.asyncio
-async def test_connected_create_audio_lifecycle():
-    communicator = WebsocketCommunicator(consumers.AlexaConsumer, '/')
+    communicator = WebsocketCommunicator(TestConsumer, '/')
     communicator.scope['session'] = {constants.SESSION_KEY_REFRESH_TOKEN: '1'}
 
     connected, subprotocol = await communicator.connect()
@@ -77,27 +130,21 @@ async def test_connected_create_audio_lifecycle():
     assert await communicator.receive_json_from() == MESSAGE_CONNECTING
     assert await communicator.receive_json_from() == MESSAGE_WAKEWORD
     assert await communicator.receive_nothing()
-
-    instance = communicator.instance
-
-    instance.alexa_client.ping_manager.cancel = mock.Mock()
-
     await communicator.disconnect()
-
-    assert (
-        instance.audio_lifecycle.on_command_started ==
-        instance.handle_command_started
-    )
-    assert (
-        instance.audio_lifecycle.on_command_finished ==
-        instance.handle_command_finished
-    )
-    assert instance.alexa_client.ping_manager.cancel.call_count == 1
 
 
 @pytest.mark.asyncio
 async def test_receive_audio():
-    communicator = WebsocketCommunicator(consumers.AlexaConsumer, '/')
+
+    class TestCommandLifecycle(helpers.AudioLifecycle):
+        get_uttered_wakeword_name = mock.Mock(return_value=None)
+        extend_audio = mock.Mock()
+
+    class TestConsumer(consumers.AlexaConsumer):
+        audio_lifecycle_class = TestCommandLifecycle
+        alexa_client_class = AlexaClientExpectSpeechResponse
+
+    communicator = WebsocketCommunicator(TestConsumer, '/')
     communicator.scope['session'] = {constants.SESSION_KEY_REFRESH_TOKEN: '1'}
 
     connected, subprotocol = await communicator.connect()
@@ -107,45 +154,23 @@ async def test_receive_audio():
     assert await communicator.receive_json_from() == MESSAGE_WAKEWORD
     assert await communicator.receive_nothing()
 
-    instance = communicator.instance
-    instance.audio_lifecycle.extend_audio = mock.Mock()
-
-    await communicator.send_to(bytes_data=b'01')
+    await communicator.send_to(bytes_data=b'01010101')
     await communicator.disconnect()
 
-    assert instance.audio_lifecycle.extend_audio.call_count == 1
-    assert instance.audio_lifecycle.extend_audio.call_args == mock.call(b'01')
-
-
-@pytest.mark.asyncio
-async def test_receive_speak_prompt():
-    communicator = WebsocketCommunicator(consumers.AlexaConsumer, '/')
-    communicator.scope['session'] = {constants.SESSION_KEY_REFRESH_TOKEN: '1'}
-
-    connected, subprotocol = await communicator.connect()
-
-    assert connected
-    assert await communicator.receive_json_from() == MESSAGE_CONNECTING
-    assert await communicator.receive_json_from() == MESSAGE_WAKEWORD
-    assert await communicator.receive_nothing()
-
-    instance = communicator.instance
-    instance.audio_lifecycle.extend_audio = mock.Mock()
-    instance.audio_lifecycle.handle_command_started = mock.Mock()
-
-    await communicator.send_to(text_data='ExpectSpeech')
-    await communicator.disconnect()
-
-    assert instance.audio_lifecycle.extend_audio.call_count == 0
-    assert instance.audio_lifecycle.handle_command_started.call_count == 1
-    assert instance.audio_lifecycle.handle_command_started.call_args == (
-        mock.call(None)
+    assert TestCommandLifecycle.extend_audio.call_count == 1
+    assert TestCommandLifecycle.extend_audio.call_args == (
+        mock.call(b'01010101')
     )
 
 
 @pytest.mark.asyncio
-async def test_send_command_to_avs_expect_speach():
-    communicator = WebsocketCommunicator(consumers.AlexaConsumer, '/')
+async def test_receive_speak_prompt(audio_lifecycle):
+
+    class TestConsumer(consumers.AlexaConsumer):
+        audio_lifecycle_class = ImmediateCommandLifecycle
+        alexa_client_class = AlexaClientExpectSpeechResponse
+
+    communicator = WebsocketCommunicator(TestConsumer, '/')
     communicator.scope['session'] = {constants.SESSION_KEY_REFRESH_TOKEN: '1'}
 
     connected, subprotocol = await communicator.connect()
@@ -155,31 +180,27 @@ async def test_send_command_to_avs_expect_speach():
     assert await communicator.receive_json_from() == MESSAGE_WAKEWORD
     assert await communicator.receive_nothing()
 
-    instance = communicator.instance
-    instance.send_status = mock.Mock()
-    instance.alexa_client.send_audio_file = mock.Mock(return_value=[
-        Directive({
-            'directive': {},
-            'header': {'name': 'ExpectSpeech', 'dialogRequestId': '123'}
-        })
-    ])
+    audio_lifecycle.extend_audio = mock.Mock()
+    audio_lifecycle.handle_command_started = mock.Mock()
 
-    instance.send_command_to_avs()
+    await communicator.send_to(text_data='ExpectSpeech')
+
+    assert await communicator.receive_json_from() == MESSAGE_COMMAND
 
     await communicator.disconnect()
-
-    assert instance.dialog_request_id == '123'
-    assert instance.send_status.call_count == 2
-    assert instance.send_status.call_args_list == [
-        mock.call('ExpectSpeech'),
-        mock.call('EXPECTING_WAKEWORD')
-    ]
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('directive_name', ['Play', 'Speak'])
-async def test_send_command_to_avs_speak(directive_name):
-    communicator = WebsocketCommunicator(consumers.AlexaConsumer, '/')
+async def test_send_command_to_avs_expect_speech(alexa_client):
+    class TestConsumer(consumers.AlexaConsumer):
+        audio_lifecycle_class = ImmediateCommandLifecycle
+        alexa_client_class = AlexaClientExpectSpeechResponse
+
+        def handle_command_started(self, wakeword_name):
+            super().handle_command_started(wakeword_name)
+            self.send_command_to_avs()
+
+    communicator = WebsocketCommunicator(TestConsumer, '/')
     communicator.scope['session'] = {constants.SESSION_KEY_REFRESH_TOKEN: '1'}
 
     connected, subprotocol = await communicator.connect()
@@ -189,34 +210,64 @@ async def test_send_command_to_avs_speak(directive_name):
     assert await communicator.receive_json_from() == MESSAGE_WAKEWORD
     assert await communicator.receive_nothing()
 
-    instance = communicator.instance
-    instance.send_status = mock.Mock()
-    instance.send = mock.Mock()
-    audio_attachment = mock.Mock()
-    instance.alexa_client.send_audio_file = mock.Mock(return_value=[
-        SpeakDirective(
-            audio_attachment=audio_attachment,
-            content={
-                'directive': {},
-                'header': {'name': directive_name, 'dialogRequestId': '123'}
-            }
-        )
-    ])
+    await communicator.send_to(text_data='ExpectSpeech')
+    assert await communicator.receive_json_from() == MESSAGE_COMMAND
+    await communicator.send_to(bytes_data=b'01010101')
 
     await communicator.disconnect()
 
-    instance.send_command_to_avs()
+    assert await communicator.receive_json_from() == {'type': 'ExpectSpeech'}
+    assert await communicator.receive_json_from() == {'type': 'ExpectSpeech'}
+    assert await communicator.receive_json_from() == MESSAGE_WAKEWORD
 
-    assert instance.send_status.call_count == 1
-    assert instance.send_status.call_args == mock.call('EXPECTING_WAKEWORD')
+    await communicator.disconnect()
 
-    assert instance.send.call_count == 1
-    assert instance.send.call_args == mock.call(bytes_data=audio_attachment)
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    'client_class', [AlexaClientPlayResponse, AlexaClientSpeakResponse]
+)
+async def test_send_command_to_avs_speak(client_class, alexa_client):
+
+    class TestConsumer(consumers.AlexaConsumer):
+        audio_lifecycle_class = ImmediateCommandLifecycle
+        alexa_client_class = client_class
+
+        def handle_command_started(self, wakeword_name):
+            super().handle_command_started(wakeword_name)
+            self.send_command_to_avs()
+
+    communicator = WebsocketCommunicator(TestConsumer, '/')
+    communicator.scope['session'] = {constants.SESSION_KEY_REFRESH_TOKEN: '1'}
+
+    connected, subprotocol = await communicator.connect()
+
+    assert connected
+    assert await communicator.receive_json_from() == MESSAGE_CONNECTING
+    assert await communicator.receive_json_from() == MESSAGE_WAKEWORD
+    assert await communicator.receive_nothing()
+
+    assert await communicator.receive_nothing()
+    await communicator.send_to(text_data='ExpectSpeech')
+    assert await communicator.receive_json_from() == MESSAGE_COMMAND
+    await communicator.send_to(bytes_data=b'01010101')
+
+    assert await communicator.receive_from() == b'22222222'
+    await communicator.disconnect()
 
 
 @pytest.mark.asyncio
 async def test_send_command_to_avs_not_understood():
-    communicator = WebsocketCommunicator(consumers.AlexaConsumer, '/')
+
+    class TestConsumer(consumers.AlexaConsumer):
+        audio_lifecycle_class = ImmediateCommandLifecycle
+        alexa_client_class = AlexaClientCommandNotUnderstood
+
+        def handle_command_started(self, wakeword_name):
+            super().handle_command_started(wakeword_name)
+            self.send_command_to_avs()
+
+    communicator = WebsocketCommunicator(TestConsumer, '/')
     communicator.scope['session'] = {constants.SESSION_KEY_REFRESH_TOKEN: '1'}
 
     connected, subprotocol = await communicator.connect()
@@ -225,15 +276,9 @@ async def test_send_command_to_avs_not_understood():
     assert await communicator.receive_json_from() == MESSAGE_CONNECTING
     assert await communicator.receive_json_from() == MESSAGE_WAKEWORD
     assert await communicator.receive_nothing()
-
-    instance = communicator.instance
-    instance.send_status = mock.Mock()
-    instance.send = mock.Mock()
-    instance.alexa_client.send_audio_file = mock.Mock(return_value=[])
+    await communicator.send_to(text_data='ExpectSpeech')
+    assert await communicator.receive_json_from() == MESSAGE_COMMAND
+    await communicator.send_to(bytes_data=b'01010101')
+    assert await communicator.receive_json_from() == MESSAGE_WAKEWORD
 
     await communicator.disconnect()
-
-    instance.send_command_to_avs()
-
-    assert instance.send_status.call_count == 1
-    assert instance.send_status.call_args == mock.call('EXPECTING_WAKEWORD')
