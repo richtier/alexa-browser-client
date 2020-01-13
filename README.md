@@ -68,7 +68,7 @@ You must compile [Snowboy](https://github.com/Kitt-AI/snowboy#compile-a-python-w
 
 If the default folder structure does not suit your needs you can [customize the wakeword detector](#wakeword).
 
-You must have [redis])https://redis.io/) running too, as Django Channels relies on redis.
+You must have [redis](https://redis.io/) running too, as Django Channels relies on redis.
 
 ### Routing and urls
 Add `url(r'^', include('alexa_browser_client.config.urls')),` to `urls.py` `url_patterns`.
