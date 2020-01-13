@@ -29,8 +29,9 @@ $ cd alexa-browser-client
 $ virtualenv .venv -p python3.6 && source .venv/bin/activate && make test_requirements
 ```
 4. [Compile snowboy](#snowboy)
-5. `$ make demo`
-6. Go to http://localhost:8000 for basic demo, or http://localhost:8000/mixer/ to play with the response audio
+5. Install and run [redis](#Dependencies)
+6. `$ make demo`
+7. Go to http://localhost:8000 for basic demo, or http://localhost:8000/mixer/ to play with the response audio
 
 ## Installation
 
@@ -66,6 +67,8 @@ You must compile [Snowboy](https://github.com/Kitt-AI/snowboy#compile-a-python-w
 ```
 
 If the default folder structure does not suit your needs you can [customize the wakeword detector](#wakeword).
+
+You must have [redis])https://redis.io/) running too, as Django Channels relies on redis.
 
 ### Routing and urls
 Add `url(r'^', include('alexa_browser_client.config.urls')),` to `urls.py` `url_patterns`.
